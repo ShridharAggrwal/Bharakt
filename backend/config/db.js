@@ -1,12 +1,12 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+// Use DATABASE_URL for connection (supports both local and production)
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' || process.env.DATABASE_URL?.includes('render.com')
+    ? { rejectUnauthorized: false }  // Required for Render
+    : false  // No SSL for local PostgreSQL
 });
 
 // Test connection
@@ -19,4 +19,3 @@ pool.on('error', (err) => {
 });
 
 module.exports = pool;
-
