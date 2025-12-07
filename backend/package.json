@@ -8,9 +8,11 @@
     "dev": "nodemon server.js",
     "db:init": "node config/initDb.js",
     "db:seed": "node config/seedAdmin.js",
-    "db:setup": "node config/initDb.js && node config/seedAdmin.js"
+    "db:setup": "node config/initDb.js && node config/seedAdmin.js",
+    "db:reset": "node scripts/resetDatabase.js"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -25,4 +27,3 @@
     "nodemon": "^3.0.2"
   }
 }
-

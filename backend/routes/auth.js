@@ -4,13 +4,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const { generateToken, getExpiryDate } = require('../utils/helpers');
-const { sendVerificationEmail } = require('../services/emailService');
+const { sendVerificationEmail } = require('../services/emailServiceSendGrid');
 const { geocodeAddress } = require('../services/geocodeService');
 
 // Register User
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, phone, gender, blood_group, address } = req.body;
+    const { name, email, password, phone, gender, blood_group, address, latitude, longitude } = req.body;
 
     // Check if email exists
     const existingUser = await pool.query(
@@ -22,13 +22,30 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
-    // Geocode address (optional - works even if geocoding fails)
-    let latitude = null, longitude = null;
+    // Enforce coordinates - either geocode address or use manual coordinates
+    let finalLatitude = null;
+    let finalLongitude = null;
+
     if (address) {
+      // Try geocoding the address
       const coords = await geocodeAddress(address);
       if (coords) {
-        latitude = coords.lat;
-        longitude = coords.lng;
+        finalLatitude = coords.lat;
+        finalLongitude = coords.lng;
+        console.log('✅ Address geocoded successfully');
+      }
+    }
+
+    // If geocoding failed or no address, check for manual coordinates
+    if (!finalLatitude || !finalLongitude) {
+      if (latitude && longitude) {
+        finalLatitude = parseFloat(latitude);
+        finalLongitude = parseFloat(longitude);
+        console.log('✅ Using manual coordinates');
+      } else {
+        return res.status(400).json({ 
+          error: 'Address geocoding failed. Please provide a valid address or enter latitude and longitude manually.' 
+        });
       }
     }
 
@@ -40,7 +57,7 @@ router.post('/register', async (req, res) => {
       `INSERT INTO users (name, email, password, phone, gender, blood_group, address, latitude, longitude)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id, name, email`,
-      [name, email, hashedPassword, phone, gender, blood_group, address, latitude, longitude]
+      [name, email, hashedPassword, phone, gender, blood_group, address, finalLatitude, finalLongitude]
     );
 
     // Create verification token
@@ -56,13 +73,10 @@ router.post('/register', async (req, res) => {
     console.log('Verification token created:', verificationToken);
     console.log('Token expires at:', expiryDate);
 
-    // Send verification email
-    try {
-      await sendVerificationEmail(email, verificationToken);
-      console.log('Verification email sent to:', email);
-    } catch (emailError) {
-      console.log('Email sending failed:', emailError.message);
-    }
+    // Send verification email (non-blocking)
+    sendVerificationEmail(email, verificationToken)
+      .then(() => console.log('✅ Verification email queued for:', email))
+      .catch(err => console.error('❌ Email failed:', err.message));
 
     res.status(201).json({
       message: 'Registration successful. Please check your email to verify your account.',
@@ -78,7 +92,7 @@ router.post('/register', async (req, res) => {
 router.post('/register/ngo/:token', async (req, res) => {
   try {
     const { token } = req.params;
-    const { name, owner_name, email, password, age, gender, address, volunteer_count } = req.body;
+    const { name, owner_name, email, password, age, gender, address, volunteer_count, latitude, longitude } = req.body;
 
     // Validate token
     const tokenResult = await pool.query(
@@ -91,13 +105,30 @@ router.post('/register/ngo/:token', async (req, res) => {
       return res.status(400).json({ error: 'Invalid or expired registration link' });
     }
 
-    // Geocode address (optional - works even if geocoding fails)
-    let latitude = null, longitude = null;
+    // Enforce coordinates - either geocode address or use manual coordinates
+    let finalLatitude = null;
+    let finalLongitude = null;
+
     if (address) {
+      // Try geocoding the address
       const coords = await geocodeAddress(address);
       if (coords) {
-        latitude = coords.lat;
-        longitude = coords.lng;
+        finalLatitude = coords.lat;
+        finalLongitude = coords.lng;
+        console.log('✅ NGO address geocoded successfully');
+      }
+    }
+
+    // If geocoding failed or no address, check for manual coordinates
+    if (!finalLatitude || !finalLongitude) {
+      if (latitude && longitude) {
+        finalLatitude = parseFloat(latitude);
+        finalLongitude = parseFloat(longitude);
+        console.log('✅ Using manual coordinates for NGO');
+      } else {
+        return res.status(400).json({ 
+          error: 'Address geocoding failed. Please provide a valid address or enter latitude and longitude manually.' 
+        });
       }
     }
 
@@ -109,7 +140,7 @@ router.post('/register/ngo/:token', async (req, res) => {
       `INSERT INTO ngos (name, owner_name, email, password, age, gender, address, latitude, longitude, volunteer_count, is_approved)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, TRUE)
        RETURNING id, name, email`,
-      [name, owner_name, email, hashedPassword, age, gender, address, latitude, longitude, volunteer_count || 0]
+      [name, owner_name, email, hashedPassword, age, gender, address, finalLatitude, finalLongitude, volunteer_count || 0]
     );
 
     // Mark token as used
@@ -140,7 +171,7 @@ router.post('/register/ngo/:token', async (req, res) => {
 router.post('/register/blood-bank/:token', async (req, res) => {
   try {
     const { token } = req.params;
-    const { name, email, password, contact_info, address } = req.body;
+    const { name, email, password, contact_info, address, latitude, longitude } = req.body;
 
     // Validate token
     const tokenResult = await pool.query(
@@ -153,13 +184,30 @@ router.post('/register/blood-bank/:token', async (req, res) => {
       return res.status(400).json({ error: 'Invalid or expired registration link' });
     }
 
-    // Geocode address (optional - works even if geocoding fails)
-    let latitude = null, longitude = null;
+    // Enforce coordinates - either geocode address or use manual coordinates
+    let finalLatitude = null;
+    let finalLongitude = null;
+
     if (address) {
+      // Try geocoding the address
       const coords = await geocodeAddress(address);
       if (coords) {
-        latitude = coords.lat;
-        longitude = coords.lng;
+        finalLatitude = coords.lat;
+        finalLongitude = coords.lng;
+        console.log('✅ Blood Bank address geocoded successfully');
+      }
+    }
+
+    // If geocoding failed or no address, check for manual coordinates
+    if (!finalLatitude || !finalLongitude) {
+      if (latitude && longitude) {
+        finalLatitude = parseFloat(latitude);
+        finalLongitude = parseFloat(longitude);
+        console.log('✅ Using manual coordinates for Blood Bank');
+      } else {
+        return res.status(400).json({ 
+          error: 'Address geocoding failed. Please provide a valid address or enter latitude and longitude manually.' 
+        });
       }
     }
 
@@ -171,7 +219,7 @@ router.post('/register/blood-bank/:token', async (req, res) => {
       `INSERT INTO blood_banks (name, email, password, contact_info, address, latitude, longitude, is_approved)
        VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE)
        RETURNING id, name, email`,
-      [name, email, hashedPassword, contact_info, address, latitude, longitude]
+      [name, email, hashedPassword, contact_info, address, finalLatitude, finalLongitude]
     );
 
     // Mark token as used

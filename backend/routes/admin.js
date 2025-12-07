@@ -5,7 +5,7 @@ const pool = require('../config/db');
 const auth = require('../middleware/auth');
 const roleCheck = require('../middleware/roleCheck');
 const { generateToken, getExpiryDate } = require('../utils/helpers');
-const { sendSignupTokenEmail } = require('../services/emailService');
+const { sendSignupTokenEmail } = require('../services/emailServiceSendGrid');
 const { geocodeAddress } = require('../services/geocodeService');
 
 // Get admin profile

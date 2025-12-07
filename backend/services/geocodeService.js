@@ -69,37 +69,53 @@ const geocodeWithGoogle = (address) => {
   });
 };
 
-// Main geocode function - tries Nominatim first, then Google if available
+// Main geocode function - tries Google first (priority), then Nominatim as fallback
 const geocodeAddress = async (address) => {
   if (!address || address.trim() === '') {
     return null;
   }
 
-  // Try Nominatim first (free)
-  try {
-    const result = await geocodeWithNominatim(address);
-    console.log('Geocoded with Nominatim:', address);
-    return result;
-  } catch (nominatimError) {
-    console.log('Nominatim failed:', nominatimError.message);
-  }
-
-  // Try Google if API key is configured
+  // Try Google first if API key is configured (more accurate)
   if (process.env.GOOGLE_MAPS_API_KEY) {
     try {
       const result = await geocodeWithGoogle(address);
-      console.log('Geocoded with Google:', address);
+      console.log('✅ Geocoded with Google Maps:', address);
       return result;
     } catch (googleError) {
-      console.log('Google geocoding failed:', googleError.message);
+      console.log('⚠️  Google geocoding failed:', googleError.message);
     }
   }
 
-  // Return null if all geocoding fails - app will still work without coordinates
-  console.log('Geocoding failed for address, continuing without coordinates:', address);
+  // Try Nominatim as fallback
+  try {
+    const result = await geocodeWithNominatim(address);
+    console.log('✅ Geocoded with OpenStreetMap:', address);
+    return result;
+  } catch (nominatimError) {
+    console.log('⚠️  Nominatim failed:', nominatimError.message);
+  }
+
+  // Return null if all geocoding fails
+  console.log('❌ All geocoding services failed for address:', address);
   return null;
 };
 
+// Required geocoding - throws error if geocoding fails (for mandatory coordinates)
+const geocodeAddressRequired = async (address) => {
+  if (!address || address.trim() === '') {
+    throw new Error('Address is required for geocoding');
+  }
+
+  const result = await geocodeAddress(address);
+  
+  if (!result) {
+    throw new Error('Unable to geocode the provided address. Please check the address or provide manual coordinates.');
+  }
+  
+  return result;
+};
+
 module.exports = {
-  geocodeAddress
+  geocodeAddress,
+  geocodeAddressRequired
 };
