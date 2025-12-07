@@ -160,7 +160,7 @@ router.get('/users', auth, roleCheck('admin'), async (req, res) => {
 router.get('/ngos', auth, roleCheck('admin'), async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, name, owner_name, email, volunteer_count, status, created_at FROM ngos ORDER BY created_at DESC'
+      'SELECT id, name, owner_name, email, volunteer_count, is_verified, status, created_at FROM ngos ORDER BY created_at DESC'
     );
     res.json(result.rows);
   } catch (error) {
@@ -173,7 +173,7 @@ router.get('/ngos', auth, roleCheck('admin'), async (req, res) => {
 router.get('/blood-banks', auth, roleCheck('admin'), async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, name, email, contact_info, status, created_at FROM blood_banks ORDER BY created_at DESC'
+      'SELECT id, name, email, contact_info, is_verified, status, created_at FROM blood_banks ORDER BY created_at DESC'
     );
     res.json(result.rows);
   } catch (error) {
