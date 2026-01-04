@@ -5,6 +5,7 @@ import { useSocket } from '../context/SocketContext'
 import api from '../services/api'
 import Modal from '../components/common/Modal'
 import Toast from '../components/common/Toast'
+import ScrollReveal from '../components/common/ScrollReveal'
 
 // Sidebar Component
 const Sidebar = () => {
@@ -29,19 +30,20 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-100 min-h-screen p-4 fixed left-0 top-0 shadow-sm">
-      <Link to="/" className="flex items-center gap-2 mb-8 px-2">
-        <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-600/20">
+    <aside className="w-64 bg-gradient-to-br from-white to-rose-50/30 border-r border-gray-100 min-h-screen p-4 fixed left-0 top-0 shadow-lg">
+      <Link to="/" className="flex items-center gap-2 mb-8 px-2 group">
+        <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 group-hover:scale-110 transition-transform">
           <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2c0 0-6 7.5-6 12a6 6 0 0 0 12 0c0-4.5-6-12-6-12z"/>
+            <path d="M12 2c0 0-6 7.5-6 12a6 6 0 0 0 12 0c0-4.5-6-12-6-12z" />
           </svg>
         </div>
-        <span className="text-xl font-bold text-gray-900">BloodLink</span>
+        <span className="text-xl font-bold gradient-text">BloodLink</span>
       </Link>
 
-      <div className="mb-6 px-2">
-        <p className="text-gray-500 text-sm">Welcome back,</p>
-        <p className="font-semibold text-gray-900 truncate">{user?.name}</p>
+      <div className="mb-6 px-2 py-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-100">
+        <p className="text-rose-600 text-sm font-medium">Welcome back,</p>
+        <p className="font-bold text-gray-900 truncate">{user?.name}</p>
+        <p className="text-xs text-gray-500 mt-1">Blood Group: <span className="gradient-text font-semibold">{user?.blood_group}</span></p>
       </div>
 
       <nav className="space-y-1">
@@ -49,16 +51,15 @@ const Sidebar = () => {
           <Link
             key={item.path}
             to={item.path}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              location.pathname === item.path
-                ? 'bg-red-600 text-white shadow-lg shadow-red-600/20'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${location.pathname === item.path
+              ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-pink-500/30 scale-105'
+              : 'text-gray-600 hover:bg-gradient-to-r hover:from-rose-50 hover:to-pink-50 hover:text-rose-700'
+              }`}
           >
             <span>{item.icon}</span>
-            <span>{item.label}</span>
+            <span className="font-medium">{item.label}</span>
             {item.badge > 0 && (
-              <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+              <span className={`ml-auto ${location.pathname === item.path ? 'bg-white text-rose-600' : 'bg-red-500 text-white'} text-xs px-2 py-1 rounded-full font-semibold animate-pulse`}>
                 {item.badge}
               </span>
             )}
@@ -68,10 +69,10 @@ const Sidebar = () => {
 
       <button
         onClick={handleLogout}
-        className="flex items-center gap-3 px-4 py-3 mt-8 text-gray-500 hover:text-gray-700 transition-colors w-full"
+        className="flex items-center gap-3 px-4 py-3 mt-8 text-gray-500 hover:text-gray-700 hover:bg-red-50 rounded-xl transition-all duration-300 w-full group"
       >
         <span>🚪</span>
-        <span>Logout</span>
+        <span className="font-medium">Logout</span>
       </button>
     </aside>
   )
@@ -100,68 +101,95 @@ const Overview = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h1>
-      
+      <h1 className="text-3xl font-bold gradient-text mb-2">Dashboard Overview</h1>
+      <p className="text-gray-600 mb-8">Track your blood donation journey</p>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="card">
-          <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-2xl mb-3">🩸</div>
-          <div className="text-2xl font-bold text-gray-900">{stats.donations}</div>
-          <div className="text-gray-500">Donations Made</div>
-        </div>
-        <div className="card">
-          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl mb-3">📋</div>
-          <div className="text-2xl font-bold text-gray-900">{stats.requests}</div>
-          <div className="text-gray-500">Blood Requests</div>
-        </div>
-        <div className="card">
-          <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center text-2xl mb-3">🔔</div>
-          <div className="text-2xl font-bold text-gray-900">{alerts.length}</div>
-          <div className="text-gray-500">Active Alerts</div>
-        </div>
+        <ScrollReveal animation="slide-up" delay={0}>
+          <div className="dashboard-card group hover:scale-105">
+            <div className="stat-card-icon bg-gradient-to-br from-rose-100 to-pink-100 text-rose-600 group-hover:scale-110 transition-transform">
+              🩸
+            </div>
+            <div className="text-3xl font-bold gradient-text mb-1">{stats.donations}</div>
+            <div className="text-gray-600 font-medium">Donations Made</div>
+            <div className="mt-3 text-xs text-rose-600 font-semibold">Lives Saved ❤️</div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal animation="slide-up" delay={100}>
+          <div className="dashboard-card group hover:scale-105">
+            <div className="stat-card-icon bg-gradient-to-br from-sky-100 to-cyan-100 text-sky-600 group-hover:scale-110 transition-transform">
+              📋
+            </div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">{stats.requests}</div>
+            <div className="text-gray-600 font-medium">Blood Requests</div>
+            <div className="mt-3 text-xs text-sky-600 font-semibold">Active Requests</div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal animation="slide-up" delay={200}>
+          <div className="dashboard-card group hover:scale-105">
+            <div className="stat-card-icon bg-gradient-to-br from-amber-100 to-orange-100 text-amber-600 group-hover:scale-110 transition-transform">
+              🔔
+            </div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">{alerts.length}</div>
+            <div className="text-gray-600 font-medium">Active Alerts</div>
+            <div className="mt-3 text-xs text-amber-600 font-semibold">Nearby Requests</div>
+          </div>
+        </ScrollReveal>
       </div>
 
-      <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Profile</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <span className="text-gray-500">Blood Group:</span>
-            <span className="ml-2 font-semibold text-red-600">{user?.blood_group || 'Not set'}</span>
-          </div>
-          <div>
-            <span className="text-gray-500">Email:</span>
-            <span className="ml-2 text-gray-900">{user?.email}</span>
-          </div>
-          {user?.latitude && user?.longitude && (
-            <div className="col-span-2">
-              <span className="text-gray-500">Location:</span>
-              <span className="ml-2 text-gray-900 text-sm">
-                {parseFloat(user.latitude).toFixed(4)}, {parseFloat(user.longitude).toFixed(4)}
-              </span>
+      <ScrollReveal animation="fade-in" delay={300}>
+        <div className="dashboard-card gradient-bg-card border-rose-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="text-2xl">👤</span> Your Profile
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-100">
+              <span className="text-gray-600 text-sm">Blood Group</span>
+              <div className="text-2xl font-bold gradient-text mt-1">{user?.blood_group || 'Not set'}</div>
             </div>
-          )}
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <span className="text-gray-600 text-sm">Email</span>
+              <div className="text-gray-900 font-semibold mt-1 truncate text-sm">{user?.email}</div>
+            </div>
+            {user?.latitude && user?.longitude && (
+              <div className="col-span-2 p-3 bg-gradient-to-r from-sky-50 to-cyan-50 rounded-xl border border-sky-100">
+                <span className="text-gray-600 text-sm flex items-center gap-1">
+                  <span>📍</span> Location Coordinates
+                </span>
+                <div className="text-gray-900 font-mono text-sm mt-1">
+                  {parseFloat(user.latitude).toFixed(4)}, {parseFloat(user.longitude).toFixed(4)}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       {alerts.length > 0 && (
-        <div className="card mt-6 border-red-200 bg-red-50/50">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Recent Alerts
-          </h2>
-          <div className="space-y-3">
-            {alerts.slice(0, 3).map((alert) => (
-              <div key={alert.id} className="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100">
-                <div>
-                  <span className="font-semibold text-red-600">{alert.blood_group}</span>
-                  <span className="text-gray-500 ml-2">needed</span>
-                  <p className="text-sm text-gray-400">{alert.address}</p>
+        <ScrollReveal animation="slide-up" delay={400}>
+          <div className="dashboard-card mt-6 border-rose-200 bg-gradient-to-br from-red-50 to-rose-50">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+              <span className="gradient-text">Recent Alerts</span>
+            </h2>
+            <div className="space-y-3">
+              {alerts.slice(0, 3).map((alert, index) => (
+                <div key={alert.id} className="flex items-center justify-between bg-white p-4 rounded-xl border border-rose-100 hover:shadow-lg transition-shadow">
+                  <div>
+                    <span className="text-2xl font-bold gradient-text">{alert.blood_group}</span>
+                    <span className="text-gray-500 ml-2 font-medium">needed urgently</span>
+                    <p className="text-sm text-gray-500 mt-1">📍 {alert.address}</p>
+                  </div>
+                  <Link to="/dashboard/alerts" className="btn-action text-sm py-2 px-5">
+                    View Details
+                  </Link>
                 </div>
-                <Link to="/dashboard/alerts" className="btn-primary text-sm py-2 px-4">
-                  View
-                </Link>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       )}
     </div>
   )
@@ -213,7 +241,7 @@ const RequestBlood = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!formData.latitude || !formData.longitude) {
       setToast({ type: 'error', message: 'Location is required. Please allow location access or enter manually.' })
       return
@@ -234,11 +262,21 @@ const RequestBlood = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Request Blood</h1>
-      
+      <div className="flex items-center gap-3 mb-6">
+        <img
+          src="/images/request_blood_illustration.png"
+          alt="Request Blood"
+          className="w-40 h-40 object-contain animate-float rounded-2xl flex-shrink-0"
+        />
+        <div>
+          <h1 className="text-4xl font-bold gradient-text mb-1">Request Blood</h1>
+          <p className="text-gray-600">Create a blood request to notify nearby donors</p>
+        </div>
+      </div>
+
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-      <div className="card max-w-lg">
+      <div className="dashboard-card max-w-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Blood Group Needed</label>
@@ -285,7 +323,7 @@ const RequestBlood = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Request Location (Donors within 35km will be notified)
             </label>
-            
+
             <button
               type="button"
               onClick={handleGetLocation}
@@ -303,8 +341,8 @@ const RequestBlood = () => {
               ) : (
                 <>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   Get Request Location
                 </>
@@ -337,11 +375,11 @@ const RequestBlood = () => {
                 />
               </div>
             </div>
-            
+
             {formData.latitude && formData.longitude && (
               <div className="text-xs text-green-600 mt-2 flex items-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 Location set: {parseFloat(formData.latitude).toFixed(4)}, {parseFloat(formData.longitude).toFixed(4)}
               </div>
@@ -377,17 +415,14 @@ const DonateBlood = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Donate Blood</h1>
-      
-      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+      <h1 className="text-3xl font-bold gradient-text mb-2">Donate Blood</h1>
+      <p className="text-gray-600 mb-6">Accept blood requests from people nearby who need your help</p>
 
-      <p className="text-gray-600 mb-6">
-        Accept blood requests from people nearby who need your help.
-      </p>
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
       {alerts.length === 0 ? (
         <div className="card text-center py-12">
-          <div className="text-4xl mb-4">✨</div>
+          <img src="/images/empty_state_success.png" alt="No requests" className="w-40 h-40 mx-auto mb-4 animate-float rounded-2xl" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No Active Requests</h3>
           <p className="text-gray-500">There are no blood requests in your area right now.</p>
         </div>
@@ -452,22 +487,21 @@ const History = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">History</h1>
+      <h1 className="text-3xl font-bold gradient-text mb-2">History</h1>
+      <p className="text-gray-600 mb-6">View your donation and request history</p>
 
       <div className="flex gap-4 mb-6">
         <button
           onClick={() => setActiveTab('donations')}
-          className={`px-4 py-2 rounded-xl transition-all font-medium ${
-            activeTab === 'donations' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'
-          }`}
+          className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold ${activeTab === 'donations' ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-pink-500/30' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
         >
           Donations ({history.donations.length})
         </button>
         <button
           onClick={() => setActiveTab('requests')}
-          className={`px-4 py-2 rounded-xl transition-all font-medium ${
-            activeTab === 'requests' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'
-          }`}
+          className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold ${activeTab === 'requests' ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-pink-500/30' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
         >
           Requests ({history.requests.length})
         </button>
@@ -513,11 +547,10 @@ const History = () => {
                     {new Date(request.created_at).toLocaleDateString()}
                   </p>
                 </div>
-                <span className={`px-3 py-1 rounded-lg text-sm font-medium ${
-                  request.status === 'active' ? 'bg-yellow-50 text-yellow-600' :
+                <span className={`px-3 py-1 rounded-lg text-sm font-medium ${request.status === 'active' ? 'bg-yellow-50 text-yellow-600' :
                   request.status === 'fulfilled' ? 'bg-green-50 text-green-600' :
-                  'bg-gray-100 text-gray-500'
-                }`}>
+                    'bg-gray-100 text-gray-500'
+                  }`}>
                   {request.status}
                 </span>
               </div>
@@ -570,17 +603,14 @@ const Alerts = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Blood Request Alerts</h1>
-      
-      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+      <h1 className="text-3xl font-bold gradient-text mb-2">Blood Request Alerts</h1>
+      <p className="text-gray-600 mb-6">Active blood requests within 35km of your location</p>
 
-      <p className="text-gray-600 mb-6">
-        These are active blood requests within 35km of your location.
-      </p>
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
       {allAlerts.length === 0 ? (
         <div className="card text-center py-12">
-          <div className="text-4xl mb-4">🎉</div>
+          <img src="/images/alert_notification.png" alt="No alerts" className="w-40 h-40 mx-auto mb-4 animate-float rounded-2xl" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">All Clear!</h3>
           <p className="text-gray-500">No blood requests in your area right now.</p>
         </div>
@@ -651,22 +681,21 @@ const Nearby = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Nearby</h1>
+      <h1 className="text-3xl font-bold gradient-text mb-2">Nearby</h1>
+      <p className="text-gray-600 mb-6">Discover campaigns and blood banks near you</p>
 
       <div className="flex gap-4 mb-6">
         <button
           onClick={() => setActiveTab('campaigns')}
-          className={`px-4 py-2 rounded-xl transition-all font-medium ${
-            activeTab === 'campaigns' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'
-          }`}
+          className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold ${activeTab === 'campaigns' ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-pink-500/30' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
         >
           Campaigns ({data.campaigns.length})
         </button>
         <button
           onClick={() => setActiveTab('bloodBanks')}
-          className={`px-4 py-2 rounded-xl transition-all font-medium ${
-            activeTab === 'bloodBanks' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'
-          }`}
+          className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold ${activeTab === 'bloodBanks' ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-pink-500/30' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
         >
           Blood Banks ({data.bloodBanks.length})
         </button>
@@ -676,6 +705,7 @@ const Nearby = () => {
         <div className="space-y-4">
           {data.campaigns.length === 0 ? (
             <div className="card text-center py-8">
+              <img src="/images/nearby_donors_map.png" alt="No campaigns" className="w-32 h-32 mx-auto mb-4 opacity-60 rounded-2xl" />
               <p className="text-gray-500">No active campaigns nearby</p>
             </div>
           ) : (
@@ -697,6 +727,7 @@ const Nearby = () => {
         <div className="space-y-4">
           {data.bloodBanks.length === 0 ? (
             <div className="card text-center py-8">
+              <img src="/images/nearby_donors_map.png" alt="No blood banks" className="w-32 h-32 mx-auto mb-4 opacity-60 rounded-2xl" />
               <p className="text-gray-500">No blood banks nearby</p>
             </div>
           ) : (
@@ -833,7 +864,7 @@ const Profile = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile</h1>
-      
+
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
       <div className="card max-w-lg">
@@ -912,7 +943,7 @@ const Profile = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Location (For blood request matching)
             </label>
-            
+
             <button
               type="button"
               onClick={handleGetLocation}
@@ -930,8 +961,8 @@ const Profile = () => {
               ) : (
                 <>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   Update My Location
                 </>
@@ -962,11 +993,11 @@ const Profile = () => {
                 />
               </div>
             </div>
-            
+
             {formData.latitude && formData.longitude && (
               <div className="text-xs text-green-600 mt-2 flex items-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 Location: {parseFloat(formData.latitude).toFixed(4)}, {parseFloat(formData.longitude).toFixed(4)}
               </div>
