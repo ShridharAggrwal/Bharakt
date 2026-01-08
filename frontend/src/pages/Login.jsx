@@ -1,187 +1,214 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import Navbar from '../components/common/Navbar'
-import ScrollReveal from '../components/common/ScrollReveal'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { Droplets, Mail, Lock, Loader2, ArrowLeft, AlertCircle } from "lucide-react";
+import { Button } from "../components/ui/Button";
+import { cn } from "../lib/utils";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    role: 'user'
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
-  const navigate = useNavigate()
+    email: "",
+    password: "",
+    role: "user",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-    // Clear error when user starts typing
-    if (error) setError('')
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError("");
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('') // Clear previous errors
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const user = await login(formData.email, formData.password, formData.role)
+      const user = await login(formData.email, formData.password, formData.role);
 
-      // Navigation happens after successful login
       switch (user.role) {
-        case 'admin':
-          navigate('/admin')
-          break
-        case 'ngo':
-          navigate('/ngo')
-          break
-        case 'blood_bank':
-          navigate('/blood-bank')
-          break
+        case "admin":
+          navigate("/admin");
+          break;
+        case "ngo":
+          navigate("/ngo");
+          break;
+        case "blood_bank":
+          navigate("/blood-bank");
+          break;
         default:
-          navigate('/dashboard')
+          navigate("/dashboard");
       }
     } catch (err) {
-      console.error('Login error:', err)
-      const errorMessage = err.response?.data?.error || err.message || 'Login failed. Please try again.'
-      setError(errorMessage)
-      setLoading(false)
+      console.error("Login error:", err);
+      const errorMessage =
+        err.response?.data?.error ||
+        err.message ||
+        "Login failed. Please try again.";
+      setError(errorMessage);
+      setLoading(false);
     }
-  }
+  };
 
   const roles = [
-    { value: 'user', label: 'Donor/User' },
-    { value: 'admin', label: 'Admin' },
-    { value: 'ngo', label: 'NGO' },
-    { value: 'blood_bank', label: 'Blood Bank' }
-  ]
+    { value: "user", label: "Donor/User" },
+    { value: "admin", label: "Admin" },
+    { value: "ngo", label: "NGO" },
+    { value: "blood_bank", label: "Blood Bank" },
+  ];
 
   return (
-    <div className="min-h-screen gradient-bg-hero">
-      <Navbar />
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div className="fixed inset-0 z-0">
+        <img
+          src="https://www.livemint.com/lm-img/img/2025/02/20/optimize/INDIA-POLITICS-DELHI-14_1740045325725_1740045348415.jpg"
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/85 via-white/80 to-slate-50/85" />
+        <div className="absolute inset-0 backdrop-blur-[1px]" />
+      </div>
 
-      <div className="min-h-screen flex items-center justify-center px-4 pt-16">
-        {/* Background Decorations */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-gradient-to-br from-rose-200 to-pink-200 rounded-full blur-3xl opacity-40 animate-float" />
-          <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-gradient-to-br from-pink-200 to-rose-200 rounded-full blur-3xl opacity-30 animate-float" style={{ animationDelay: '1s' }} />
-        </div>
+      {/* Decorative gradient orbs */}
+      <div className="fixed top-20 right-20 w-64 h-64 bg-gradient-to-br from-red-300/40 to-rose-400/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed bottom-20 left-20 w-48 h-48 bg-gradient-to-br from-rose-200/40 to-red-300/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed top-1/2 left-1/3 w-32 h-32 bg-gradient-to-br from-red-200/30 to-rose-300/20 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="w-full max-w-md relative">
-          <ScrollReveal animation="scale-in">
-            <div className="form-card shadow-2xl">
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-pink-500/30 animate-float">
-                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2c0 0-6 7.5-6 12a6 6 0 0 0 12 0c0-4.5-6-12-6-12z" />
-                  </svg>
-                </div>
-                <h1 className="text-3xl font-bold gradient-text">Welcome Back</h1>
-                <p className="text-gray-600 mt-2">Sign in to your account</p>
-              </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative z-10 w-full max-w-md"
+      >
+        {/* Back to Home */}
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 transition-colors group"
+        >
+          <div className="w-8 h-8 rounded-full bg-white/50 border border-slate-200 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all text-slate-500 group-hover:text-slate-700">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          <span className="text-sm font-medium">Back to Home</span>
+        </Link>
 
-              {error && (
-                <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 animate-slide-up">
-                  <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                    {error}
-                  </div>
-                </div>
-              )}
+        {/* Login Card */}
+        <div className="bg-white/80 backdrop-blur-xl border border-rose-100/50 rounded-[2.5rem] p-8 shadow-xl shadow-red-100/30">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-red-600/30">
+              <Droplets className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-serif text-slate-900 mb-2">Welcome Back</h1>
+            <p className="text-slate-500 text-sm">Sign in to continue your journey</p>
+          </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Role Selection */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Login as</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {roles.map((role) => (
-                      <button
-                        key={role.value}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, role: role.value })}
-                        className={`py-2.5 px-3 rounded-xl border-2 text-sm font-semibold transition-all duration-300 ${formData.role === role.value
-                          ? 'bg-gradient-to-r from-rose-500 to-pink-600 border-transparent text-white shadow-lg shadow-pink-500/30'
-                          : 'bg-white border-gray-200 text-gray-600 hover:border-rose-300 hover:bg-rose-50/50'
-                          }`}
-                      >
-                        {role.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-red-50 border border-red-100 rounded-xl p-4 mb-6 flex items-start gap-3"
+              >
+                <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-red-600">{error}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-                {/* Email */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Role Selection */}
+            <div className="grid grid-cols-2 gap-2">
+              {roles.map((role) => (
+                <button
+                  key={role.value}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: role.value })}
+                  className={cn(
+                    "py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-300 border",
+                    formData.role === role.value
+                      ? "bg-red-600 border-red-600 text-white shadow-md shadow-red-600/20"
+                      : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:border-slate-300"
+                  )}
+                >
+                  {role.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-slate-700 ml-1">Email Address</label>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-red-500 transition-colors" />
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="input-field"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 pl-12 pr-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-red-500/50 focus:bg-white focus:ring-2 focus:ring-red-500/10 transition-all duration-300"
                     placeholder="Enter your email"
                     required
                   />
                 </div>
+              </div>
 
-                {/* Password */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-slate-700 ml-1">Password</label>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-red-500 transition-colors" />
                   <input
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="input-field"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 pl-12 pr-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-red-500/50 focus:bg-white focus:ring-2 focus:ring-red-500/10 transition-all duration-300"
                     placeholder="Enter your password"
                     required
                   />
-                  <div className="text-right mt-2">
-                    <Link
-                      to="/forgot-password"
-                      className="text-sm text-rose-600 hover:text-rose-700 font-medium transition-colors"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
                 </div>
-
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed mt-6"
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Signing in...
-                    </span>
-                  ) : (
-                    'Sign In'
-                  )}
-                </button>
-              </form>
-
-              <div className="mt-6 pt-6 border-t border-gray-100 text-center text-gray-600">
-                Don't have an account?{' '}
-                <Link to="/register" className="gradient-text hover:opacity-80 font-semibold transition-opacity">
-                  Register here
-                </Link>
+                <div className="text-right">
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-slate-500 hover:text-red-600 transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
               </div>
             </div>
-          </ScrollReveal>
-        </div>
-      </div>
-    </div>
-  )
-}
 
-export default Login
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-red-600 text-white hover:bg-red-700 rounded-xl h-12 text-base font-semibold shadow-lg shadow-red-600/20 transition-all duration-300 transform hover:scale-[1.02]"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Signing in...</span>
+                </div>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-slate-500 text-sm">
+              Don't have an account?{" "}
+              <Link to="/register" className="text-red-600 font-semibold hover:underline">
+                Create Account
+              </Link>
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default Login;

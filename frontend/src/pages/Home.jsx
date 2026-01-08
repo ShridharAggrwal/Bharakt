@@ -1,287 +1,1072 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import Navbar from '../components/common/Navbar'
-import Footer from '../components/common/Footer'
-import ScrollReveal from '../components/common/ScrollReveal'
-import api from '../services/api'
+import { useState, useEffect, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {
+  Heart,
+  Users,
+  Building2,
+  Activity,
+  Bell,
+  ShieldCheck,
+  MapPin,
+  Clock,
+  UserPlus,
+  Droplets,
+  HeartHandshake,
+  ArrowRight,
+  Menu,
+  X,
+  Phone,
+  Mail,
+  ChevronRight,
+  Check,
+} from "lucide-react";
+import { Button } from "../components/ui/Button";
 
-const Home = () => {
-  const [stats, setStats] = useState({
-    activeDonors: 0,
-    bloodBanks: 0,
-    ngos: 0,
-    livesSaved: 0
-  })
+function AnimatedCounter({ target, suffix = "" }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await api.get('/stats')
-        setStats(response.data)
-      } catch (error) {
-        console.log('Failed to fetch stats')
-      }
+    if (isInView) {
+      const duration = 2000;
+      const steps = 60;
+      const increment = target / steps;
+      let current = 0;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          setCount(target);
+          clearInterval(timer);
+        } else {
+          setCount(Math.floor(current));
+        }
+      }, duration / steps);
+      return () => clearInterval(timer);
     }
-    fetchStats()
-  }, [])
-
-  const statCards = [
-    { label: 'Active Donors', value: stats.activeDonors, icon: '👥', color: 'bg-gradient-to-br from-rose-50 to-pink-50 text-rose-600' },
-    { label: 'Blood Banks', value: stats.bloodBanks, icon: '🏥', color: 'bg-gradient-to-br from-sky-50 to-cyan-50 text-sky-600' },
-    { label: 'NGOs', value: stats.ngos, icon: '🤝', color: 'bg-gradient-to-br from-purple-50 to-pink-50 text-purple-600' },
-    { label: 'Lives Saved', value: stats.livesSaved, icon: '❤️', color: 'bg-gradient-to-br from-pink-50 to-rose-50 text-pink-600' }
-  ]
+  }, [isInView, target]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
-
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden gradient-bg-hero">
-        {/* Background Decorations */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-rose-200 to-pink-200 rounded-full blur-3xl opacity-30 animate-float" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-pink-200 to-rose-200 rounded-full blur-3xl opacity-30 animate-float" style={{ animationDelay: '1s' }} />
-        </div>
-
-        <div className="max-w-7xl mx-auto relative">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-rose-50 to-pink-50 text-rose-600 px-4 py-2 rounded-full text-sm font-medium mb-6 animate-scale-in border border-rose-100">
-              <span className="w-2 h-2 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full animate-pulse"></span>
-              Saving lives, one donation at a time
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900 animate-fade-in">
-              Save Lives,{' '}
-              <span className="gradient-text">Donate Blood</span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-10 animate-slide-up leading-relaxed" style={{ animationDelay: '0.2s' }}>
-              Connect with blood donors and recipients in your area.
-              Every donation makes a difference. Join our community of lifesavers today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style={{ animationDelay: '0.4s' }}>
-              <Link to="/register" className="btn-primary text-lg px-8 py-4">
-                Become a Donor
-              </Link>
-              <Link to="/login" className="btn-secondary text-lg px-8 py-4">
-                Request Blood
-              </Link>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20">
-            {statCards.map((stat, index) => (
-              <ScrollReveal key={stat.label} animation="slide-up" delay={index * 100}>
-                <div className="gradient-bg-card border-0 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 text-center">
-                  <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl ${stat.color} flex items-center justify-center text-2xl shadow-md`}>
-                    {stat.icon}
-                  </div>
-                  <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value.toLocaleString()}</div>
-                  <div className="text-gray-500">{stat.label}</div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <ScrollReveal animation="fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-900">
-              How BloodLink Works
-            </h2>
-          </ScrollReveal>
-          <ScrollReveal animation="fade-in" delay={100}>
-            <p className="text-gray-600 text-center max-w-2xl mx-auto mb-16">
-              Our platform connects those in need with willing donors through a simple, efficient process
-            </p>
-          </ScrollReveal>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                step: '01',
-                title: 'Register',
-                description: 'Create your account and fill in your blood group and location details.',
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                )
-              },
-              {
-                step: '02',
-                title: 'Request or Donate',
-                description: 'Request blood when needed or respond to alerts from nearby requests.',
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                )
-              },
-              {
-                step: '03',
-                title: 'Save Lives',
-                description: 'Connect with donors within 35km and help save lives together.',
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                )
-              }
-            ].map((feature, index) => (
-              <ScrollReveal key={feature.step} animation="slide-up" delay={index * 150}>
-                <div className="card relative group hover:border-rose-200">
-                  <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">
-                    {feature.step}
-                  </div>
-                  <div className="pt-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl flex items-center justify-center text-rose-600 mb-6 group-hover:scale-110 transition-transform">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3 text-gray-900">{feature.title}</h3>
-                    <p className="text-gray-600">{feature.description}</p>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="py-20 px-4 gradient-bg-soft">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <ScrollReveal animation="slide-in-left">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-                  About <span className="gradient-text">BloodLink</span>
-                </h2>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  BloodLink is a platform dedicated to connecting blood donors with those in need.
-                  We believe that every person deserves access to safe blood when they need it most.
-                </p>
-                <p className="text-gray-600 mb-8 leading-relaxed">
-                  Our mission is to bridge the gap between blood donors and recipients through
-                  technology, making the process of blood donation and request seamless and efficient.
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { label: 'Real-time Alerts', desc: 'Instant notifications' },
-                    { label: '35km Radius', desc: 'Location-based matching' },
-                    { label: 'Verified Donors', desc: 'Safe & trustworthy' },
-                    { label: '24/7 Available', desc: 'Always ready to help' }
-                  ].map((item, index) => (
-                    <ScrollReveal key={item.label} animation="slide-in-left" delay={index * 100}>
-                      <div className="flex items-start gap-3">
-                        <div className="w-6 h-6 bg-gradient-to-br from-rose-100 to-pink-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                          <svg className="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                        <div>
-                          <div className="font-medium text-gray-900">{item.label}</div>
-                          <div className="text-sm text-gray-500">{item.desc}</div>
-                        </div>
-                      </div>
-                    </ScrollReveal>
-                  ))}
-                </div>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal animation="slide-in-right">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-rose-100 via-pink-100 to-transparent rounded-3xl blur-2xl opacity-60 animate-gradient-shift" />
-                <div className="relative gradient-bg-card border-0 rounded-3xl p-8 shadow-2xl">
-                  <div className="text-6xl mb-6">🩸</div>
-                  <h3 className="text-2xl font-bold mb-4 text-gray-900">Join Our Community</h3>
-                  <p className="text-gray-600 mb-6">
-                    Be part of a network that saves lives every day. Register now and make a difference.
-                  </p>
-                  <Link to="/register" className="btn-primary inline-block">
-                    Get Started
-                  </Link>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Blood Types Section */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <ScrollReveal animation="fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-900">
-              Blood Types We Support
-            </h2>
-          </ScrollReveal>
-          <ScrollReveal animation="fade-in" delay={100}>
-            <p className="text-gray-600 text-center max-w-2xl mx-auto mb-12">
-              All blood types are needed. Find out which type you can donate and receive.
-            </p>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
-            {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((type, index) => (
-              <ScrollReveal key={type} animation="scale-in" delay={index * 80}>
-                <div className="gradient-bg-card border-0 text-center py-6 hover:shadow-xl transition-all duration-300 cursor-pointer group rounded-2xl hover:-translate-y-1">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform">{type}</div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <ScrollReveal animation="scale-in">
-            <div className="max-w-16xl mx-auto">
-              <div className="relative group">
-                {/* Animated gradient glow background */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-rose-400 via-pink-500 to-red-500 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 animate-gradient-shift transition duration-1000"></div>
-
-                {/* Main card */}
-                <div className="relative bg-gradient-to-br from-rose-500 via-pink-500 to-pink-600 rounded-3xl p-10 md:p-12 shadow-2xl text-center">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl"></div>
-
-                  <div className="relative">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-6 animate-float">
-                      <span className="text-4xl">❤️</span>
-                    </div>
-
-                    <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
-                      Ready to Make a Difference?
-                    </h2>
-
-                    <p className="text-pink-50 mb-10 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                      Join thousands of donors who are saving lives every day. Your donation matters.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <Link to="/register" className="bg-white text-rose-600 hover:bg-gray-50 font-semibold py-4 px-10 rounded-xl transition-all duration-300 text-lg hover:scale-105 hover:-translate-y-1 shadow-xl hover:shadow-2xl">
-                        Register Now
-                      </Link>
-                      <Link to="/login" className="bg-transparent hover:bg-white/10 text-white font-semibold py-4 px-10 rounded-xl border-2 border-white/50 hover:border-white transition-all duration-300 text-lg hover:scale-105 hover:-translate-y-1">
-                        Already a Member?
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      <Footer />
-    </div>
-  )
+    <span ref={ref}>
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
 }
 
-export default Home
+function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState("Home");
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navLinks = ["Home", "About", "Blood Types", "How It Works", "Contact"];
+
+  const getDashboardRoute = () => {
+    if (!user) return '/login';
+    switch (user.role) {
+      case 'admin': return '/admin';
+      case 'ngo': return '/ngo';
+      case 'blood_bank': return '/blood-bank';
+      default: return '/dashboard';
+    }
+  };
+
+  const handleDonateClick = () => {
+    if (user) navigate('/dashboard/donate');
+    else navigate('/login');
+  };
+
+  const handleRequestClick = () => {
+    if (user) navigate('/dashboard/request');
+    else navigate('/login');
+  };
+
+  return (
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
+        ? "bg-white/95 backdrop-blur-xl shadow-sm py-3"
+        : "bg-transparent py-5"
+        }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between">
+          <motion.div
+            className="flex items-center gap-2.5 cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            onClick={() => navigate('/')}
+          >
+            <div className="w-9 h-9 bg-red-600 rounded-full flex items-center justify-center">
+              <Droplets className="w-4 h-4 text-white" />
+            </div>
+            <span className={`text-lg font-semibold transition-colors duration-300 ${isScrolled ? "text-slate-900" : "text-white"}`}>
+              BloodLink
+            </span>
+          </motion.div>
+
+          <nav className="hidden lg:flex items-center">
+            <div className={`flex items-center backdrop-blur-sm rounded-full px-1.5 py-1.5 border transition-all duration-300 ${isScrolled
+              ? "bg-slate-50/80 border-slate-200/50"
+              : "bg-white/10 border-white/20"
+              }`}>
+              {navLinks.map((item) => (
+                <button
+                  key={item}
+                  onClick={() => {
+                    setActiveLink(item);
+                    const element = document.getElementById(item.toLowerCase().replace(/\s+/g, '-'));
+                    if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    else if (item === 'Home') window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeLink === item
+                    ? (isScrolled ? "bg-slate-900 text-white" : "bg-white text-slate-900")
+                    : (isScrolled ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white")
+                    }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          <div className="hidden lg:flex items-center gap-3">
+            <Button
+              variant="ghost"
+              onClick={handleRequestClick}
+              className={`rounded-full transition-all duration-300 px-5 h-10 text-sm font-medium ${isScrolled
+                ? "text-slate-700 hover:bg-slate-100"
+                : "text-white hover:bg-white/10"
+                }`}
+            >
+              Request Blood
+            </Button>
+
+            {!user ? (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/login')}
+                  className={`rounded-full transition-all duration-300 px-5 h-10 text-sm font-medium ${isScrolled
+                    ? "text-slate-700 hover:bg-slate-100"
+                    : "text-white hover:bg-white/10"
+                    }`}
+                >
+                  Login
+                </Button>
+                <Button
+                  onClick={() => navigate('/register')}
+                  className={`rounded-full transition-all duration-300 px-6 h-10 text-sm font-medium ${isScrolled
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : "bg-white text-slate-900 hover:bg-slate-100"
+                    }`}
+                >
+                  Register
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={() => navigate(getDashboardRoute())}
+                className={`rounded-full transition-all duration-300 px-6 h-10 text-sm font-medium ${isScrolled
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-white text-slate-900 hover:bg-slate-100"
+                  }`}
+              >
+                Dashboard
+              </Button>
+            )}
+          </div>
+
+          <button
+            className={`lg:hidden p-2 rounded-full transition-colors ${isScrolled ? "hover:bg-slate-100 text-slate-900" : "hover:bg-white/10 text-white"}`}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {isMobileMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-slate-100"
+        >
+          <div className="px-6 py-6 space-y-2">
+            {navLinks.map((item) => (
+              <button
+                key={item}
+                onClick={() => {
+                  setActiveLink(item);
+                  setIsMobileMenuOpen(false);
+                  const element = document.getElementById(item.toLowerCase().replace(/\s+/g, '-'));
+                  if (element) element.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`block w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeLink === item
+                  ? "bg-slate-900 text-white"
+                  : "text-slate-700 hover:bg-slate-100"
+                  }`}
+              >
+                {item}
+              </button>
+            ))}
+            <div className="pt-4 border-t border-slate-100 space-y-3">
+              <Button
+                onClick={handleRequestClick}
+                className="w-full bg-red-50 text-red-600 hover:bg-red-100 rounded-full h-11"
+              >
+                Request Blood
+              </Button>
+              {!user ? (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/login')}
+                    className="w-full rounded-full h-11 border-slate-200 text-slate-700"
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    onClick={() => navigate('/register')}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full h-11"
+                  >
+                    Register
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={() => navigate(getDashboardRoute())}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full h-11"
+                >
+                  Dashboard
+                </Button>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </motion.header>
+  );
+}
+
+function HeroSection() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleDonateClick = () => {
+    if (user) navigate('/dashboard/donate');
+    else navigate('/login');
+  };
+
+  return (
+    <section className="relative min-h-[90vh] lg:min-h-screen overflow-hidden bg-slate-50">
+      {/* Background Image Container */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://www.livemint.com/lm-img/img/2025/02/20/optimize/INDIA-POLITICS-DELHI-14_1740045325725_1740045348415.jpg"
+          alt="Healthcare professional"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black/80" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-24 lg:pt-28 h-full flex items-center min-h-[90vh] lg:min-h-screen">
+        <div className="grid lg:grid-cols-12 gap-12 items-center w-full py-12">
+          <div className="lg:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-2 mb-6"
+            >
+              <div className="w-2 h-2 bg-red-500 rounded-full" />
+              <span className="text-white/90 text-sm font-medium tracking-wide uppercase">Saving Lives Together</span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-serif text-white leading-[1.2] mb-6"
+            >
+              Together We Support<br />
+              <span className="text-red-400 italic">Educate and Heal</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-white/80 text-base sm:text-lg max-w-xl mb-8 leading-relaxed"
+            >
+              Every donation helps a family grow stronger, healthier, and more secure. Together, we build a future full of possibilities.
+            </motion.p>
+
+            <div className="flex flex-wrap gap-4 mb-10">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 }}
+                className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-5 py-2.5"
+              >
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span className="text-sm font-medium text-white">100% Transparent</span>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 }}
+                className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-5 py-2.5"
+              >
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span className="text-sm font-medium text-white">Verified Donors</span>
+              </motion.div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6 }}
+              className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
+                    <Droplets className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-lg font-medium text-white">BloodLink</span>
+                </div>
+                <div className="px-3 py-1 bg-white/10 rounded-full text-[10px] font-medium text-white/60 uppercase tracking-widest">
+                  Live Impact
+                </div>
+              </div>
+
+              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                <HeartHandshake className="w-7 h-7 text-white" />
+              </div>
+
+              <h3 className="text-2xl font-semibold text-white mb-4 leading-tight">Make an Immediate Impact</h3>
+              <p className="text-white/70 text-base mb-8 leading-relaxed">
+                Your contribution provides essential aid to families in need with care and dignity.
+              </p>
+
+              <Button
+                onClick={handleDonateClick}
+                className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full h-14 text-lg font-medium shadow-lg shadow-red-600/20"
+              >
+                Donate Now
+              </Button>
+            </motion.div>
+
+            <div className="grid grid-cols-2 gap-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 text-center lg:text-left"
+              >
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4 mx-auto lg:mx-0">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-white mb-1">500+</div>
+                <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Active Volunteers</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 text-center lg:text-left"
+              >
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4 mx-auto lg:mx-0">
+                  <Heart className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-white mb-1">50,000+</div>
+                <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Lives Saved</div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2"
+      >
+        <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
+          <motion.div
+            animate={{ y: [0, 12, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="w-1 h-2 bg-white rounded-full"
+          />
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+function FeaturesSection() {
+  return (
+    <section className="py-20 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="lg:col-span-1"
+          >
+            <div className="bg-white rounded-[1.5rem] overflow-hidden card-shadow h-full border border-slate-100">
+              <div className="aspect-[4/3] relative">
+                <img
+                  src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/blood-donation.jpg"
+                  alt="Blood donation"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-4 left-4">
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+                    <HeartHandshake className="w-6 h-6 text-red-600" />
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">Compassion-Driven Support</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  We provide essential aid to families in need with care, respect, and dignity.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="lg:col-span-1"
+          >
+            <div className="bg-white rounded-[1.5rem] p-6 card-shadow h-full flex flex-col border border-slate-100">
+              <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mb-5">
+                <ShieldCheck className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Transparent & Trusted</h3>
+              <p className="text-sm text-slate-500 leading-relaxed mb-6">
+                Every donation is used responsibly, with clear reporting and real impact updates.
+              </p>
+              <div className="mt-auto">
+                <div className="aspect-[4/3] rounded-2xl overflow-hidden">
+                  <img
+                    src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/medical-care.jpg"
+                    alt="Medical care"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-1 flex flex-col gap-6"
+          >
+            <div className="bg-white rounded-[1.5rem] p-6 card-shadow border border-slate-100">
+              <h4 className="text-sm font-semibold text-slate-900 mb-2">Community-Focused Programs</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Our initiatives empower local communities through education, health support, and sustainable relief.
+              </p>
+            </div>
+
+            <div className="bg-slate-100 rounded-[1.5rem] overflow-hidden flex-1 relative">
+              <img
+                src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/community.jpg"
+                alt="Community support"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Droplets className="w-4 h-4 text-red-600" />
+                    <span className="text-xs font-medium text-slate-500">BloodLink</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ImpactSection() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleDonateClick = () => {
+    if (user) navigate('/dashboard/donate');
+    else navigate('/login');
+  };
+
+  return (
+    <section id="about" className="py-20 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-8"
+            >
+              <h2 className="text-3xl lg:text-4xl font-serif text-slate-900 mb-4">
+                How Your Support Helps<br />
+                <span className="text-red-600">Change Lives</span>
+              </h2>
+              <p className="text-slate-500 text-sm leading-relaxed max-w-md">
+                Explore the programs that directly impact families and communities. Every contribution you make goes toward creating real, measurable change.
+              </p>
+            </motion.div>
+
+            <div className="space-y-6">
+              {[
+                {
+                  icon: Heart,
+                  title: "Support Life-Saving Healthcare",
+                  description: "Provide medical checkups, essential medicines, and emergency treatments for families who cannot afford healthcare.",
+                  image: "https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/healthcare-1.jpg"
+                },
+                {
+                  icon: HeartHandshake,
+                  title: "Compassion-Driven Support",
+                  description: "Provide essential monthly food packs to families struggling with hunger. Your support ensures they receive nutritious meals and daily comfort.",
+                  image: "https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/compassion.jpg"
+                },
+                {
+                  icon: Users,
+                  title: "Give Children a Chance to Learn",
+                  description: "Help underprivileged children access quality education through books, uniforms, and school supplies. Your contribution shapes their future.",
+                  image: "https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/education.jpg"
+                }
+              ].map((item, index) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex gap-6 items-start"
+                >
+                  <div className="flex-1 bg-white rounded-2xl p-5 card-shadow border border-slate-100">
+                    <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+                      <item.icon className="w-5 h-5 text-red-600" />
+                    </div>
+                    <h3 className="font-semibold text-slate-900 mb-2">{item.title}</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed mb-4">{item.description}</p>
+                    <Button size="sm" onClick={handleDonateClick} className="bg-red-600 hover:bg-red-700 text-white rounded-full text-xs px-4 h-8">
+                      Donate Now
+                    </Button>
+                  </div>
+                  <div className="hidden sm:block w-32 h-32 rounded-2xl overflow-hidden flex-shrink-0">
+                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="space-y-6"
+          >
+            <div className="grid grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl overflow-hidden card-shadow">
+                <div className="aspect-square">
+                  <img
+                    src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/healthcare-support.jpg"
+                    alt="Healthcare support"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="bg-white rounded-2xl p-4 card-shadow border border-slate-100">
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-2xl font-bold text-slate-900">8,500+</span>
+                    <span className="text-xs text-slate-500">Medical Aid Given</span>
+                  </div>
+                </div>
+                <div className="bg-white rounded-2xl p-4 card-shadow border border-slate-100">
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-2xl font-bold text-slate-900">12,000+</span>
+                    <span className="text-xs text-slate-500">Children Supported</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl p-5 card-shadow border border-slate-100">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+                  <ShieldCheck className="w-5 h-5 text-red-600" />
+                </div>
+                <h4 className="font-semibold text-slate-900 mb-2">Vision Statement</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  We strive to create a future where every child has the opportunity to learn, every family has access to basic needs, and every community can grow with hope, security.
+                </p>
+              </div>
+              <div className="bg-white rounded-2xl p-5 card-shadow border border-slate-100">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+                  <Building2 className="w-5 h-5 text-red-600" />
+                </div>
+                <h4 className="font-semibold text-slate-900 mb-2">Mission Statement</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  We are dedicated to supporting vulnerable communities by providing food, education, healthcare, and essential resources with compassion and dignity.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BloodTypesSection() {
+  const bloodTypes = [
+    { type: "A+", canDonateTo: "A+, AB+", canReceiveFrom: "A+, A-, O+, O-", percentage: "35.7%" },
+    { type: "A-", canDonateTo: "A+, A-, AB+, AB-", canReceiveFrom: "A-, O-", percentage: "6.3%" },
+    { type: "B+", canDonateTo: "B+, AB+", canReceiveFrom: "B+, B-, O+, O-", percentage: "8.5%" },
+    { type: "B-", canDonateTo: "B+, B-, AB+, AB-", canReceiveFrom: "B-, O-", percentage: "1.5%" },
+    { type: "AB+", canDonateTo: "AB+", canReceiveFrom: "All Types", percentage: "3.4%" },
+    { type: "AB-", canDonateTo: "AB+, AB-", canReceiveFrom: "A-, B-, AB-, O-", percentage: "0.6%" },
+    { type: "O+", canDonateTo: "O+, A+, B+, AB+", canReceiveFrom: "O+, O-", percentage: "37.4%" },
+    { type: "O-", canDonateTo: "All Types", canReceiveFrom: "O-", percentage: "6.6%" },
+  ];
+
+  return (
+    <section id="blood-types" className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <span className="inline-block text-red-600 font-medium text-sm tracking-wide uppercase mb-3">
+            Blood Types
+          </span>
+          <h2 className="text-3xl lg:text-4xl font-serif text-slate-900 mb-4">
+            Understanding Blood Compatibility
+          </h2>
+          <p className="text-slate-500 max-w-xl mx-auto">
+            Learn about different blood types and their compatibility for safe transfusions
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {bloodTypes.map((blood, index) => (
+            <motion.div
+              key={blood.type}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
+              className="group"
+            >
+              <div className="bg-slate-50 rounded-2xl p-5 h-full hover:bg-white hover:shadow-lg transition-all duration-300 border border-slate-100 hover:border-slate-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                    <span className="text-xl font-bold text-white">{blood.type}</span>
+                  </div>
+                  <span className="text-xs font-medium text-slate-400">{blood.percentage}</span>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wide">Donates to</span>
+                    <p className="text-xs font-medium text-slate-700">{blood.canDonateTo}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wide">Receives from</span>
+                    <p className="text-xs font-medium text-slate-700">{blood.canReceiveFrom}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HowItWorksSection() {
+  const steps = [
+    {
+      number: "01",
+      icon: UserPlus,
+      title: "Register",
+      description: "Create your account in minutes. Provide basic health information and verify your identity.",
+    },
+    {
+      number: "02",
+      icon: Droplets,
+      title: "Request or Donate",
+      description: "Find nearby donors when you need blood, or respond to requests from those in need.",
+    },
+    {
+      number: "03",
+      icon: HeartHandshake,
+      title: "Save Lives",
+      description: "Complete the donation and become a hero. Track your impact and inspire others.",
+    },
+  ];
+
+  return (
+    <section id="how-it-works" className="py-20 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <span className="inline-block text-red-600 font-medium text-sm tracking-wide uppercase mb-3">
+            How It Works
+          </span>
+          <h2 className="text-3xl lg:text-4xl font-serif text-slate-900 mb-4">
+            Simple Steps to Save Lives
+          </h2>
+          <p className="text-slate-500 max-w-xl mx-auto">
+            Our streamlined process makes blood donation easier than ever
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {steps.map((step, index) => (
+            <motion.div
+              key={step.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.15 }}
+            >
+              <div className="bg-white rounded-[1.5rem] p-8 card-shadow h-full relative group hover:shadow-lg transition-all duration-300 border border-slate-100">
+                <div className="absolute top-6 right-6 text-5xl font-bold text-slate-100 group-hover:text-red-50 transition-colors">
+                  {step.number}
+                </div>
+                <div className="relative">
+                  <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-red-100 transition-colors">
+                    <step.icon className="w-7 h-7 text-red-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-3">{step.title}</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed">{step.description}</p>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
+                    <ChevronRight className="w-6 h-6 text-slate-300" />
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StatsSection() {
+  const stats = [
+    { icon: Users, label: "Active Donors", value: 15000, suffix: "+", color: "bg-blue-50", iconColor: "text-blue-600" },
+    { icon: Building2, label: "Blood Banks", value: 250, suffix: "+", color: "bg-emerald-50", iconColor: "text-emerald-600" },
+    { icon: Activity, label: "Partner NGOs", value: 120, suffix: "+", color: "bg-amber-50", iconColor: "text-amber-600" },
+    { icon: Heart, label: "Lives Saved", value: 50000, suffix: "+", color: "bg-red-50", iconColor: "text-red-600" },
+  ];
+
+  return (
+    <section className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-slate-50 rounded-2xl p-6 hover:bg-white hover:shadow-lg transition-all duration-300 border border-slate-100 hover:border-slate-200"
+            >
+              <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center mb-4`}>
+                <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
+              </div>
+              <div className="text-3xl font-bold text-slate-900 mb-1">
+                <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+              </div>
+              <div className="text-sm text-slate-500">{stat.label}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CTASection() {
+  return (
+    <section className="py-20 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="relative rounded-[2rem] overflow-hidden">
+          <img
+            src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/community.jpg"
+            alt="Community support"
+            className="w-full h-[500px] object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+
+          <div className="absolute inset-0 flex items-center">
+            <div className="max-w-lg ml-12 lg:ml-20">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="flex items-center gap-2 mb-4"
+              >
+                <div className="w-2 h-2 bg-red-500 rounded-full" />
+                <span className="text-white/80 text-sm font-medium tracking-wide uppercase">Stay Connected</span>
+              </motion.div>
+
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="text-3xl lg:text-4xl font-serif text-white mb-6"
+              >
+                Get Updates That<br />Make a Difference
+              </motion.h2>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="flex gap-3"
+              >
+                <input
+                  type="email"
+                  placeholder="Enter Your Email Address"
+                  className="flex-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-white/40"
+                />
+                <Button className="bg-white text-slate-900 hover:bg-white/90 rounded-full px-6 h-12 text-sm font-medium">
+                  Subscribe
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CommunitySection() {
+  return (
+    <section className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="bg-slate-900 rounded-[2rem] p-10 lg:p-16 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+            backgroundSize: '24px 24px',
+          }} />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/10 rounded-full blur-3xl" />
+
+          <div className="relative grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="inline-block text-red-400 font-medium text-sm tracking-wide uppercase mb-4">
+                Join Our Community
+              </span>
+              <h2 className="text-3xl lg:text-4xl font-serif text-white mb-5 leading-tight">
+                Be Part of Something<br />
+                <span className="text-red-400">Bigger</span>
+              </h2>
+              <p className="text-slate-400 mb-8 leading-relaxed">
+                Connect with a community of compassionate individuals dedicated to saving lives.
+                Every member makes a difference.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button className="bg-red-600 hover:bg-red-700 text-white rounded-full px-6 h-11 text-sm font-medium">
+                  Get Started
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+                <Button variant="outline" className="border-slate-700 text-white hover:bg-white/5 rounded-full px-6 h-11 text-sm font-medium">
+                  Learn More
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { value: "24/7", label: "Emergency Support" },
+                { value: "100%", label: "Verified Donors" },
+                { value: "35km", label: "Coverage Radius" },
+                { value: "Free", label: "Forever" },
+              ].map((item, index) => (
+                <motion.div
+                  key={item.label}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 hover:bg-white/10 transition-colors"
+                >
+                  <div className="text-2xl font-bold text-white mb-1">{item.value}</div>
+                  <div className="text-xs text-slate-400">{item.label}</div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  const quickLinks = [
+    { label: "About Us", href: "#about" },
+    { label: "How It Works", href: "#how-it-works" },
+    { label: "Blood Types", href: "#blood-types" },
+    { label: "Become a Donor", href: "#" },
+    { label: "Request Blood", href: "#" },
+  ];
+
+  const legalLinks = [
+    { label: "Privacy Policy", href: "#" },
+    { label: "Terms of Service", href: "#" },
+    { label: "Cookie Policy", href: "#" },
+  ];
+
+  return (
+    <footer id="contact" className="bg-slate-900 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+          <div className="lg:col-span-2">
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="w-9 h-9 bg-red-600 rounded-full flex items-center justify-center">
+                <Droplets className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-lg font-semibold text-white">BloodLink</span>
+            </div>
+            <p className="text-slate-400 text-sm leading-relaxed max-w-sm mb-6">
+              BloodLink is dedicated to connecting blood donors with those in need,
+              making life-saving blood accessible to everyone, everywhere.
+            </p>
+            <div className="flex gap-3">
+              {["twitter", "facebook", "instagram", "linkedin"].map((social) => (
+                <a
+                  key={social}
+                  href="#"
+                  className="w-9 h-9 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center transition-colors"
+                >
+                  <span className="sr-only">{social}</span>
+                  <div className="w-4 h-4 bg-slate-400" style={{
+                    maskImage: `url(https://cdn.simpleicons.org/${social})`,
+                    WebkitMaskImage: `url(https://cdn.simpleicons.org/${social})`,
+                    maskSize: 'contain',
+                    WebkitMaskSize: 'contain',
+                  }} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-white font-medium text-sm mb-5">Quick Links</h3>
+            <ul className="space-y-3">
+              {quickLinks.map((link) => (
+                <li key={link.label}>
+                  <a href={link.href} className="text-slate-400 hover:text-white text-sm transition-colors">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-white font-medium text-sm mb-5">Contact</h3>
+            <ul className="space-y-4">
+              <li className="flex items-center gap-3 text-slate-400 text-sm">
+                <Phone className="w-4 h-4 text-red-500" />
+                <span>+1 (800) BLOOD-LINK</span>
+              </li>
+              <li className="flex items-center gap-3 text-slate-400 text-sm">
+                <Mail className="w-4 h-4 text-red-500" />
+                <span>support@bloodlink.org</span>
+              </li>
+              <li className="flex items-start gap-3 text-slate-400 text-sm">
+                <MapPin className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                <span>123 Healthcare Ave,<br />Medical District, MD 12345</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-slate-500 text-xs">
+            © {new Date().getFullYear()} BloodLink. All rights reserved.
+          </p>
+          <div className="flex gap-6">
+            {legalLinks.map((link) => (
+              <a key={link.label} href={link.href} className="text-slate-500 hover:text-slate-400 text-xs transition-colors">
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Header />
+      <HeroSection />
+      <FeaturesSection />
+      <ImpactSection />
+      <BloodTypesSection />
+      <HowItWorksSection />
+      <StatsSection />
+      <CTASection />
+      <CommunitySection />
+      <Footer />
+    </div>
+  );
+}

@@ -5,137 +5,25 @@ import { useSocket } from '../context/SocketContext'
 import api from '../services/api'
 import Modal from '../components/common/Modal'
 import Toast from '../components/common/Toast'
-
-// Sidebar Component
-const Sidebar = () => {
-  const location = useLocation()
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const { alerts } = useSocket()
-  const [showQuickActions, setShowQuickActions] = useState(false)
-
-  const navItems = [
-    { path: '/ngo', label: 'Overview', icon: '📊' },
-    { path: '/ngo/campaigns', label: 'Campaigns', icon: '📅' },
-    { path: '/ngo/create-campaign', label: 'Create Campaign', icon: '➕' },
-    { path: '/ngo/alerts', label: 'Alerts', icon: '🔔', badge: alerts.length },
-    { path: '/ngo/request-blood', label: 'Request Blood', icon: '🩸' },
-    { path: '/ngo/profile', label: 'Profile', icon: '👤' },
-  ]
-
-  const quickActions = [
-    { path: '/ngo/create-campaign', label: 'Create Campaign', icon: '➕', description: 'Start new campaign' },
-    { path: '/ngo/campaigns', label: 'Campaigns', icon: '📅', description: 'Manage campaigns' },
-    { path: '/ngo/alerts', label: 'Alerts', icon: '🔔', description: 'Blood requests', badge: alerts.length },
-    { path: '/ngo/request-blood', label: 'Request Blood', icon: '🩸', description: 'Request donations' },
-    { path: 'logout', label: 'Logout', icon: '🚪', description: 'Sign out from account' },
-  ]
-
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
-
-  const handleQuickAction = (path) => {
-    setShowQuickActions(false)
-    if (path === 'logout') {
-      logout()
-      navigate('/')
-    } else {
-      navigate(path)
-    }
-  }
-
-  return (
-    <>
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-64 bg-gradient-to-br from-white to-rose-50/30 border-r border-gray-100 min-h-screen p-4 fixed left-0 top-0 shadow-lg">
-        <Link to="/" className="flex items-center gap-2 mb-8 px-2 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30 group-hover:scale-110 transition-transform">
-            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2c0 0-6 7.5-6 12a6 6 0 0 0 12 0c0-4.5-6-12-6-12z" />
-            </svg>
-          </div>
-          <span className="text-xl font-bold gradient-text">BloodLink</span>
-        </Link>
-
-        <div className="mb-6 px-2 py-3 bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl border border-rose-100">
-          <p className="text-rose-600 text-sm font-medium">NGO Portal</p>
-          <p className="font-bold text-gray-900 truncate">{user?.name}</p>
-        </div>
-
-        <nav className="space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${location.pathname === item.path
-                ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-pink-500/30 scale-105'
-                : 'text-gray-600 hover:bg-gradient-to-r hover:from-rose-50 hover:to-pink-50 hover:text-rose-700'
-                }`}
-            >
-              <span>{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
-              {item.badge > 0 && (
-                <span className={`ml-auto ${location.pathname === item.path ? 'bg-white text-rose-600' : 'bg-red-500 text-white'} text-xs px-2 py-1 rounded-full font-semibold animate-pulse`}>
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          ))}
-        </nav>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 mt-8 text-gray-500 hover:text-gray-700 hover:bg-red-50 rounded-xl transition-all duration-300 w-full group"
-        >
-          <span>🚪</span>
-          <span className="font-medium">Logout</span>
-        </button>
-      </aside>
-
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-        <div className="flex justify-around items-center">
-          <Link to="/ngo" className={`flex flex-col items-center gap-1 px-4 py-3 transition-all duration-300 ${location.pathname === '/ngo' ? 'text-rose-600' : 'text-gray-600'}`}>
-            <span className="text-2xl">📊</span>
-            <span className="text-xs font-medium">Overview</span>
-          </Link>
-          <button onClick={() => setShowQuickActions(true)} className="flex flex-col items-center gap-1 px-4 py-3 -mt-6 transition-all duration-300">
-            <div className="w-14 h-14 bg-gradient-to-r from-rose-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/30 hover:scale-110 transition-transform">
-              <span className="text-white text-2xl font-bold">+</span>
-            </div>
-          </button>
-          <Link to="/ngo/profile" className={`flex flex-col items-center gap-1 px-4 py-3 transition-all duration-300 ${location.pathname === '/ngo/profile' ? 'text-rose-600' : 'text-gray-600'}`}>
-            <span className="text-2xl">👤</span>
-            <span className="text-xs font-medium">Profile</span>
-          </Link>
-        </div>
-      </nav>
-
-      {/* Quick Actions Modal */}
-      {showQuickActions && (
-        <div className="md:hidden fixed inset-0 bg-black/50 z-50 flex items-end" onClick={() => setShowQuickActions(false)}>
-          <div className="bg-white rounded-t-3xl w-full p-6 pb-8 animate-slide-up" onClick={(e) => e.stopPropagation()}>
-            <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
-            <h3 className="text-xl font-bold gradient-text mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {quickActions.map((action) => (
-                <button key={action.path} onClick={() => handleQuickAction(action.path)} className="relative p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-rose-100 hover:shadow-lg transition-all duration-300 text-left">
-                  {action.badge > 0 && <span className="absolute top-2 right-2 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-semibold animate-pulse">{action.badge}</span>}
-                  <div className="text-3xl mb-2">{action.icon}</div>
-                  <div className="font-semibold text-gray-900 text-sm">{action.label}</div>
-                  <div className="text-xs text-gray-500 mt-1">{action.description}</div>
-                </button>
-              ))}
-            </div>
-            <button onClick={() => setShowQuickActions(false)} className="w-full mt-4 py-3 text-gray-600 font-medium hover:bg-gray-50 rounded-xl transition-colors">Cancel</button>
-          </div>
-        </div>
-      )}
-    </>
-  )
-}
+import DashboardLayout from '../components/layout/DashboardLayout'
+import {
+  BarChart3,
+  Calendar,
+  Plus,
+  Bell,
+  Droplets,
+  User,
+  Users,
+  Target,
+  Heart,
+  MapPin,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  Building2
+} from 'lucide-react'
+import { motion } from 'framer-motion'
+import { cn } from '../lib/utils'
 
 // Overview Section
 const Overview = () => {
@@ -160,75 +48,100 @@ const Overview = () => {
     fetchStats()
   }, [])
 
-  return (
-    <div>
-      <h1 className="text-3xl font-bold gradient-text mb-2">NGO Dashboard</h1>
-      <p className="text-gray-600 mb-8">Manage your campaigns and help save lives</p>
+  const statCards = [
+    { label: "Active Campaigns", value: stats.activeCampaigns, icon: Calendar, gradient: "from-emerald-500 to-green-600", bgLight: "bg-emerald-50", textColor: "text-emerald-600", desc: "Ongoing Events" },
+    { label: "Total Campaigns", value: stats.campaignsCount, icon: Target, gradient: "from-rose-500 to-red-600", bgLight: "bg-rose-50", textColor: "text-rose-600", desc: "Events Created" },
+    { label: "Requests Fulfilled", value: stats.bloodRequestsAccepted, icon: Heart, gradient: "from-purple-500 to-purple-600", bgLight: "bg-purple-50", textColor: "text-purple-600", desc: "Lives Saved" },
+    { label: "Active Alerts", value: alerts.length, icon: Bell, gradient: "from-sky-500 to-blue-600", bgLight: "bg-sky-50", textColor: "text-sky-600", desc: "Nearby Requests" },
+  ]
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="dashboard-card group hover:scale-105">
-          <div className="stat-card-icon bg-gradient-to-br from-green-100 to-emerald-100 text-green-600 group-hover:scale-110 transition-transform">📅</div>
-          <div className="text-3xl font-bold gradient-text mb-1">{stats.activeCampaigns}</div>
-          <div className="text-gray-600 font-medium">Active Campaigns</div>
-          <div className="mt-3 text-xs text-green-600 font-semibold">Ongoing Events</div>
-        </div>
-        <div className="dashboard-card group hover:scale-105">
-          <div className="stat-card-icon bg-gradient-to-br from-rose-100 to-pink-100 text-rose-600 group-hover:scale-110 transition-transform">🎯</div>
-          <div className="text-3xl font-bold text-gray-900 mb-1">{stats.campaignsCount}</div>
-          <div className="text-gray-600 font-medium">Campaigns Created</div>
-          <div className="mt-3 text-xs text-rose-600 font-semibold">Total Events</div>
-        </div>
-        <div className="dashboard-card group hover:scale-105">
-          <div className="stat-card-icon bg-gradient-to-br from-purple-100 to-violet-100 text-purple-600 group-hover:scale-110 transition-transform">🩸</div>
-          <div className="text-3xl font-bold text-gray-900 mb-1">{stats.bloodRequestsAccepted}</div>
-          <div className="text-gray-600 font-medium">Requests Fulfilled</div>
-          <div className="mt-3 text-xs text-purple-600 font-semibold">Lives Saved</div>
-        </div>
-        <div className="dashboard-card group hover:scale-105">
-          <div className="stat-card-icon bg-gradient-to-br from-sky-100 to-cyan-100 text-sky-600 group-hover:scale-110 transition-transform">👥</div>
-          <div className="text-3xl font-bold text-gray-900 mb-1">{stats.volunteerCount}</div>
-          <div className="text-gray-600 font-medium">Volunteers</div>
-          <div className="mt-3 text-xs text-sky-600 font-semibold">Team Members</div>
-        </div>
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">NGO Dashboard</h1>
+        <p className="text-slate-500">Manage your campaigns and help save lives</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((stat, index) => (
+          <div
+            key={stat.label}
+            className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-500 hover:-translate-y-1"
+          >
+            <div className={cn("absolute top-0 left-0 right-0 h-1 bg-gradient-to-r", stat.gradient)} />
+            <div className="flex items-start justify-between mb-5">
+              <div className={cn("p-3.5 rounded-2xl bg-gradient-to-br shadow-lg", stat.gradient)}>
+                <stat.icon className="w-6 h-6 text-white" />
+              </div>
+              <div className={cn("text-xs font-bold px-2.5 py-1 rounded-full", stat.bgLight, stat.textColor)}>
+                #{index + 1}
+              </div>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-4xl font-bold text-slate-900 tracking-tight">{stat.value}</h3>
+              <p className="text-slate-600 font-semibold">{stat.label}</p>
+              <p className={cn("text-xs font-medium pt-2 flex items-center gap-1.5", stat.textColor)}>
+                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+                {stat.desc}
+              </p>
+            </div>
+            <div className={cn("absolute -bottom-8 -right-8 w-24 h-24 rounded-full opacity-10 bg-gradient-to-br blur-2xl group-hover:opacity-20 transition-opacity", stat.gradient)} />
+          </div>
+        ))}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <Link to="/ngo/create-campaign" className="dashboard-card hover:border-rose-200 transition-all">
+        <Link to="/ngo/create-campaign" className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-rose-100 to-pink-100 text-rose-600 rounded-xl flex items-center justify-center text-2xl shadow-md">➕</div>
+            <div className="w-14 h-14 bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-rose-200 group-hover:scale-110 transition-transform">
+              <Plus className="w-6 h-6" />
+            </div>
             <div>
-              <h3 className="font-bold text-gray-900">Create Campaign</h3>
-              <p className="text-gray-500 text-sm">Start a new blood donation campaign</p>
+              <h3 className="font-bold text-slate-900 text-lg group-hover:text-rose-600 transition-colors">Create Campaign</h3>
+              <p className="text-slate-500 text-sm mt-1">Start a new blood donation campaign</p>
             </div>
           </div>
         </Link>
 
-        <Link to="/ngo/campaigns" className="dashboard-card hover:border-sky-200 transition-all">
+        <Link to="/ngo/campaigns" className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-sky-100 to-cyan-100 text-sky-600 rounded-xl flex items-center justify-center text-2xl shadow-md">📋</div>
+            <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-sky-200 group-hover:scale-110 transition-transform">
+              <Calendar className="w-6 h-6" />
+            </div>
             <div>
-              <h3 className="font-bold text-gray-900">View Campaigns</h3>
-              <p className="text-gray-500 text-sm">Manage your existing campaigns</p>
+              <h3 className="font-bold text-slate-900 text-lg group-hover:text-sky-600 transition-colors">View Campaigns</h3>
+              <p className="text-slate-500 text-sm mt-1">Manage your existing campaigns</p>
             </div>
           </div>
         </Link>
       </div>
 
       {alerts.length > 0 && (
-        <div className="dashboard-card mt-6 border-rose-200 bg-gradient-to-br from-red-50 to-rose-50">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-            <span className="gradient-text">Recent Blood Requests</span>
+        <div className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50">
+          <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+            <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
+            Recent Blood Requests
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {alerts.slice(0, 3).map((alert) => (
-              <div key={alert.id} className="flex items-center justify-between bg-white p-4 rounded-xl border border-rose-100 hover:shadow-lg transition-shadow">
-                <div>
-                  <span className="text-2xl font-bold gradient-text">{alert.blood_group}</span>
-                  <span className="text-gray-500 ml-2 font-medium">- {alert.units_needed} unit(s)</span>
-                  <p className="text-sm text-gray-500 mt-1">📍 {alert.address}</p>
+              <div key={alert.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-slate-50 to-white border border-slate-100 hover:shadow-md transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-rose-200">
+                    {alert.blood_group}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-slate-900 font-medium">{alert.units_needed} units needed</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {alert.address}
+                    </div>
+                  </div>
                 </div>
-                <Link to="/ngo/alerts" className="btn-action text-sm py-2 px-5">View Details</Link>
+                <Link to="/ngo/alerts" className="px-4 py-2 bg-gradient-to-r from-rose-500 to-red-600 text-white hover:from-rose-600 hover:to-red-700 rounded-lg transition-colors text-sm font-medium shadow-lg shadow-rose-200">
+                  View Details
+                </Link>
               </div>
             ))}
           </div>
@@ -276,64 +189,73 @@ const Campaigns = () => {
     }
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div></div>
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div></div>
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Campaigns</h1>
-        <Link to="/ngo/create-campaign" className="btn-primary">Create New</Link>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Campaigns</h1>
+          <p className="text-slate-500">Manage your blood donation drives</p>
+        </div>
+        <Link to="/ngo/create-campaign" className="flex items-center gap-2 px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-medium transition-colors shadow-lg shadow-rose-200">
+          <Plus className="w-5 h-5" /> Create New
+        </Link>
       </div>
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
       {campaigns.length === 0 ? (
-        <div className="card text-center py-12">
-          <div className="text-4xl mb-4">📅</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Campaigns Yet</h3>
-          <p className="text-gray-500 mb-4">Create your first blood donation campaign</p>
-          <Link to="/ngo/create-campaign" className="btn-primary inline-block">Create Campaign</Link>
+        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-sm">
+          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Calendar className="w-8 h-8 text-slate-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-800 mb-2">No Campaigns Yet</h3>
+          <p className="text-slate-500 mb-6">Create your first blood donation campaign</p>
+          <Link to="/ngo/create-campaign" className="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-medium transition-colors inline-flex items-center gap-2 shadow-sm">
+            <Plus className="w-4 h-4" /> Create Campaign
+          </Link>
         </div>
       ) : (
         <div className="space-y-4">
           {campaigns.map((campaign) => (
-            <div key={campaign.id} className="card">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
+            <div key={campaign.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between flex-wrap gap-4">
+                <div className="flex-1 min-w-[300px]">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">{campaign.title}</h3>
+                    <h3 className="text-xl font-bold text-slate-800">{campaign.title}</h3>
                     {campaign.health_checkup_available && (
-                      <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-lg flex items-center gap-1">
+                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 text-xs font-medium rounded-lg flex items-center gap-1">
                         ⚕️ Health Checkup
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-500">📍 {campaign.address}</p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    🗓 {new Date(campaign.start_date).toLocaleDateString()} - {new Date(campaign.end_date).toLocaleDateString()}
-                  </p>
+                  <div className="space-y-1 text-sm text-slate-500">
+                    <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {campaign.address}</p>
+                    <p className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {new Date(campaign.start_date).toLocaleDateString()} - {new Date(campaign.end_date).toLocaleDateString()}</p>
+                  </div>
                   {campaign.status === 'ended' && campaign.blood_units_collected !== null && (
-                    <div className="mt-3 flex items-center gap-2">
-                      <span className="px-3 py-1 bg-green-50 text-green-600 text-sm font-semibold rounded-lg">
-                        🩸 {campaign.blood_units_collected} units collected
+                    <div className="mt-4 flex items-center gap-3">
+                      <span className="px-3 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-100 text-sm font-semibold rounded-lg flex items-center gap-2">
+                        <Droplets className="w-4 h-4" /> {campaign.blood_units_collected} units collected
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-slate-400">
                         Ended on {new Date(campaign.ended_at).toLocaleDateString()}
                       </span>
                     </div>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`px-3 py-1 rounded-lg text-sm font-medium ${campaign.status === 'active'
-                      ? 'bg-green-50 text-green-600'
-                      : 'bg-gray-100 text-gray-500'
+                <div className="flex items-center gap-3">
+                  <span className={`px-3 py-1 rounded-lg text-sm font-medium border ${campaign.status === 'active'
+                    ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                    : 'bg-slate-100 text-slate-500 border-slate-200'
                     }`}>
-                    {campaign.status === 'active' ? '✓ Active' : '⏹ Ended'}
+                    {campaign.status === 'active' ? 'Active' : 'Ended'}
                   </span>
                   {campaign.status === 'active' && (
                     <button
                       onClick={() => setEndModal({ open: true, campaign, bloodUnits: '' })}
-                      className="bg-rose-50 text-rose-600 hover:bg-rose-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                      className="px-4 py-2 bg-white text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-lg text-sm font-medium transition-all shadow-sm"
                     >
                       End Campaign
                     </button>
@@ -347,41 +269,38 @@ const Campaigns = () => {
 
       {/* End Campaign Modal */}
       {endModal.open && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setEndModal({ open: false, campaign: null, bloodUnits: '' })}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">End Campaign</h2>
-            <p className="text-gray-600 mb-6">How many blood units were collected during <span className="font-semibold">{endModal.campaign?.title}</span>?</p>
+        <Modal isOpen={endModal.open} onClose={() => setEndModal({ open: false, campaign: null, bloodUnits: '' })} title="End Campaign">
+          <h2 className="text-lg font-medium text-slate-800 mb-2">End Campaign: {endModal.campaign?.title}</h2>
+          <p className="text-slate-500 mb-6 text-sm">Please enter the total blood units collected during this campaign.</p>
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Blood Units Collected *</label>
-              <input
-                type="number"
-                min="0"
-                value={endModal.bloodUnits}
-                onChange={(e) => setEndModal({ ...endModal, bloodUnits: e.target.value })}
-                className="input-field"
-                placeholder="Enter number of units"
-                autoFocus
-              />
-              <p className="text-xs text-gray-500 mt-1">This information is mandatory to complete the campaign</p>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setEndModal({ open: false, campaign: null, bloodUnits: '' })}
-                className="flex-1 btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleEndCampaign}
-                className="flex-1 btn-primary"
-              >
-                End Campaign
-              </button>
-            </div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-slate-700 mb-2">Blood Units Collected</label>
+            <input
+              type="number"
+              min="0"
+              value={endModal.bloodUnits}
+              onChange={(e) => setEndModal({ ...endModal, bloodUnits: e.target.value })}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+              placeholder="0"
+              autoFocus
+            />
           </div>
-        </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => setEndModal({ open: false, campaign: null, bloodUnits: '' })}
+              className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleEndCampaign}
+              className="flex-1 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-medium transition-colors shadow-sm"
+            >
+              End Campaign
+            </button>
+          </div>
+        </Modal>
       )}
     </div>
   )
@@ -453,114 +372,76 @@ const CreateCampaign = () => {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Campaign</h1>
+    <div className="max-w-2xl mx-auto">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">Create Campaign</h1>
+        <p className="text-slate-500">Organize a new blood donation drive</p>
+      </div>
+
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
-      <div className="card max-w-lg">
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+      <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Title</label>
-            <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="input-field" placeholder="e.g., Blood Donation Drive 2024" required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Location / Address</label>
-            <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="input-field resize-none" rows="2" placeholder="Enter campaign location" required />
+            <label className="block text-sm font-medium text-slate-700 mb-2">Campaign Title</label>
+            <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all font-medium" placeholder="e.g., Blood Donation Drive 2024" required />
           </div>
 
-          {/* Campaign Location Coordinates */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Coordinates</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Location / Address</label>
+            <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all resize-none h-24 font-medium" placeholder="Enter campaign location" required />
+          </div>
 
-            <button
-              type="button"
-              onClick={handleGetLocation}
-              disabled={gettingLocation}
-              className="w-full mb-3 py-2 px-4 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {gettingLocation ? (
-                <>
-                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Getting location...
-                </>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Get Campaign Location
-                </>
-              )}
-            </button>
-
+          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Campaign Coordinates</label>
+              </div>
+              <button
+                type="button"
+                onClick={handleGetLocation}
+                disabled={gettingLocation}
+                className="px-4 py-2 bg-white border border-slate-200 text-blue-600 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+              >
+                {gettingLocation ? <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div> : <MapPin className="w-4 h-4" />}
+                Get Location
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Latitude</label>
-                <input
-                  type="number"
-                  step="any"
-                  value={formData.latitude}
-                  onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                  className="input-field text-sm"
-                  placeholder="e.g., 12.9716"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Longitude</label>
-                <input
-                  type="number"
-                  step="any"
-                  value={formData.longitude}
-                  onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                  className="input-field text-sm"
-                  placeholder="e.g., 77.5946"
-                  required
-                />
-              </div>
-            </div>
-
-            {formData.latitude && formData.longitude && (
-              <div className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                Location set: {parseFloat(formData.latitude).toFixed(4)}, {parseFloat(formData.longitude).toFixed(4)}
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Start Date & Time</label>
-              <input type="datetime-local" value={formData.start_date} onChange={(e) => setFormData({ ...formData, start_date: e.target.value })} className="input-field" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">End Date & Time</label>
-              <input type="datetime-local" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} className="input-field" required />
+              <input type="number" step="any" value={formData.latitude} onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-red-500" placeholder="Lat" required />
+              <input type="number" step="any" value={formData.longitude} onChange={(e) => setFormData({ ...formData, longitude: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-red-500" placeholder="Lng" required />
             </div>
           </div>
 
-          {/* Health Checkup */}
-          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border border-blue-100">
-            <label className="flex items-center cursor-pointer">
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Start Date & Time</label>
+              <input type="datetime-local" value={formData.start_date} onChange={(e) => setFormData({ ...formData, start_date: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-medium" required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">End Date & Time</label>
+              <input type="datetime-local" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-medium" required />
+            </div>
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+            <label className="flex items-center cursor-pointer gap-3">
               <input
                 type="checkbox"
                 checked={formData.health_checkup_available}
                 onChange={(e) => setFormData({ ...formData, health_checkup_available: e.target.checked })}
-                className="w-5 h-5 text-rose-600 border-gray-300 rounded focus:ring-rose-500 cursor-pointer"
+                className="w-5 h-5 text-rose-600 bg-white border-slate-300 rounded focus:ring-rose-500 cursor-pointer"
               />
-              <div className="ml-3">
-                <span className="text-sm font-semibold text-gray-900">⚕️ Free Health Checkup Available</span>
-                <p className="text-xs text-gray-600 mt-1">Offer free health checkups to donors at this campaign</p>
+              <div>
+                <span className="block text-sm font-semibold text-blue-700">⚕️ Free Health Checkup Available</span>
+                <p className="text-xs text-blue-500">Offer free health checkups to donors at this campaign</p>
               </div>
             </label>
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full">{loading ? 'Creating...' : 'Create Campaign'}</button>
+          <button type="submit" disabled={loading} className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg shadow-red-200 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+            {loading ? 'Creating Campaign...' : 'Create Campaign'}
+          </button>
         </form>
       </div>
     </div>
@@ -598,32 +479,51 @@ const NGOAlerts = () => {
     }
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div></div>
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div></div>
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Blood Request Alerts</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">Blood Request Alerts</h1>
+        <p className="text-slate-500">Active blood requests within 35km of your location</p>
+      </div>
+
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+
       {allAlerts.length === 0 ? (
-        <div className="card text-center py-12">
-          <div className="text-4xl mb-4">✨</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Active Requests</h3>
-          <p className="text-gray-500">No blood requests in your area right now.</p>
+        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-sm">
+          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Bell className="w-8 h-8 text-slate-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-800 mb-2">All Clear!</h3>
+          <p className="text-slate-500">No blood requests in your area right now.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-4">
           {allAlerts.map((alert) => (
-            <div key={alert.id} className="card">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-3xl font-bold text-red-600">{alert.blood_group}</span>
-                    <span className="bg-red-50 text-red-600 px-3 py-1 rounded-lg font-medium">{alert.units_needed} unit(s) needed</span>
+            <div key={alert.id} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-all duration-300">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-orange-50 text-orange-500">
+                    <AlertTriangle className="w-6 h-6" />
                   </div>
-                  <p className="text-gray-700 mb-2">{alert.address}</p>
-                  <p className="text-sm text-gray-400">Posted {new Date(alert.created_at).toLocaleString()}</p>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg font-bold text-slate-800">{alert.blood_group} Needed</span>
+                      <span className="px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-semibold">
+                        {alert.units_needed} unit(s)
+                      </span>
+                    </div>
+                    <p className="text-slate-600 text-sm mb-1">{alert.address}</p>
+                    <div className="flex items-center gap-4 text-xs text-slate-400">
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(alert.created_at).toLocaleString()}</span>
+                      {alert.distance && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {(alert.distance / 1000).toFixed(1)} km away</span>}
+                    </div>
+                  </div>
                 </div>
-                <button onClick={() => handleAccept(alert.id)} className="btn-primary">Accept & Help</button>
+                <button onClick={() => handleAccept(alert.id)} className="w-full md:w-auto px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium shadow-md shadow-red-200 transition-all">
+                  Accept & Help
+                </button>
               </div>
             </div>
           ))}
@@ -683,40 +583,52 @@ const NGORequestBlood = () => {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Request Blood</h1>
+    <div className="max-w-2xl mx-auto">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">Request Blood</h1>
+        <p className="text-slate-500">Create a blood request for emergencies</p>
+      </div>
+
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
-      <div className="card max-w-2xl">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Blood Group Needed</label>
-            <select value={formData.blood_group} onChange={(e) => setFormData({ ...formData, blood_group: e.target.value })} className="input-field" required>
-              <option value="">Select Blood Group</option>
-              {bloodGroups.map((bg) => <option key={bg} value={bg}>{bg}</option>)}
-            </select>
+
+      <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Blood Group Needed</label>
+              <select value={formData.blood_group} onChange={(e) => setFormData({ ...formData, blood_group: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-medium appearance-none" required>
+                <option value="">Select</option>
+                {bloodGroups.map((bg) => <option key={bg} value={bg}>{bg}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Units Needed</label>
+              <input type="number" min="1" max="20" value={formData.units_needed} onChange={(e) => setFormData({ ...formData, units_needed: parseInt(e.target.value) })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-medium" required />
+            </div>
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Units Needed</label>
-            <input type="number" min="1" max="20" value={formData.units_needed} onChange={(e) => setFormData({ ...formData, units_needed: parseInt(e.target.value) })} className="input-field" required />
+            <label className="block text-sm font-medium text-slate-700 mb-2">Location / Address</label>
+            <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-medium resize-none h-24" placeholder="Enter the address where blood is needed" required />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Location / Address</label>
-            <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="input-field resize-none" rows="3" placeholder="Enter the address where blood is needed" required />
-          </div>
-          <div className="pt-4 border-t border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <label className="block text-sm font-medium text-gray-700">Location Coordinates <span className="text-red-500">*</span></label>
-              <button type="button" onClick={handleGetLocation} disabled={loadingLocation} className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1">
-                {loadingLocation ? (<><svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Getting...</>) : (<>📍 Get Current Location</>)}
+
+          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-slate-700">Location Coordinates <span className="text-rose-500">*</span></label>
+              <button type="button" onClick={handleGetLocation} disabled={loadingLocation} className="px-4 py-2 bg-white border border-slate-200 text-blue-600 hover:bg-slate-50 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-sm">
+                {loadingLocation ? <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div> : <MapPin className="w-4 h-4" />}
+                Get Location
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div><label className="block text-xs text-gray-500 mb-1">Latitude</label><input type="number" step="any" value={formData.latitude} onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} className="input-field text-sm" placeholder="e.g., 12.971592847362951" required /></div>
-              <div><label className="block text-xs text-gray-500 mb-1">Longitude</label><input type="number" step="any" value={formData.longitude} onChange={(e) => setFormData({ ...formData, longitude: e.target.value })} className="input-field text-sm" placeholder="e.g., 77.594623847362847" required /></div>
+              <input type="number" step="any" value={formData.latitude} onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-red-500" placeholder="Lat" required />
+              <input type="number" step="any" value={formData.longitude} onChange={(e) => setFormData({ ...formData, longitude: e.target.value })} className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-red-500" placeholder="Lng" required />
             </div>
-            <p className="text-xs text-gray-400 mt-2">Precise coordinates are required to notify nearby donors within 35km radius.</p>
           </div>
-          <button type="submit" disabled={loading} className="btn-primary w-full">{loading ? 'Creating Request...' : 'Request Blood'}</button>
+
+          <button type="submit" disabled={loading} className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg shadow-red-200 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+            {loading ? 'Creating Request...' : 'Request Blood'}
+          </button>
         </form>
       </div>
     </div>
@@ -796,65 +708,118 @@ const NGOProfile = () => {
     }
   }
 
+  const InputField = ({ label, ...props }) => (
+    <div className="space-y-2">
+      <label className="text-sm font-semibold text-slate-700">{label}</label>
+      <input className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium placeholder:text-slate-400" {...props} />
+    </div>
+  )
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">NGO Profile</h1>
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">Profile</h1>
+        <p className="text-slate-500">Manage your NGO's information</p>
+      </div>
+
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
-      <div className="card max-w-2xl">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div><label className="block text-sm font-medium text-gray-700 mb-2">NGO Name</label><input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-field" /></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-2">Owner Name</label><input type="text" value={formData.owner_name} onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })} className="input-field" /></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-2">Email</label><input type="email" value={user?.email} className="input-field bg-gray-50" disabled /></div>
-          <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium text-gray-700 mb-2">Age</label><input type="number" value={formData.age} onChange={(e) => setFormData({ ...formData, age: e.target.value })} className="input-field" /></div>
-            <div><label className="block text-sm font-medium text-gray-700 mb-2">Gender</label><select value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="input-field"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-800 mb-6 pb-4 border-b border-slate-100">Organization Details</h2>
+            <form id="profileForm" onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <InputField label="NGO Name" type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                <InputField label="Owner Name" type="text" value={formData.owner_name} onChange={(e) => setFormData({ ...formData, owner_name: e.target.value })} />
+                <InputField label="Email" type="email" value={user?.email} disabled className="bg-slate-100 text-slate-500 cursor-not-allowed" />
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField label="Age" type="number" value={formData.age} onChange={(e) => setFormData({ ...formData, age: e.target.value })} />
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">Gender</label>
+                    <select value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 font-medium">
+                      <option value="">Select</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Address</label>
+                <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 font-medium resize-none h-[80px]" />
+              </div>
+            </form>
           </div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-2">Volunteer Count</label><input type="number" value={formData.volunteer_count} onChange={(e) => setFormData({ ...formData, volunteer_count: e.target.value })} className="input-field" /></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-2">Address</label><textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="input-field resize-none" rows="2" /></div>
-          <div className="pt-4 border-t border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <label className="block text-sm font-medium text-gray-700">Location Coordinates</label>
-              <button type="button" onClick={handleGetLocation} disabled={loadingLocation} className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1">
-                {loadingLocation ? (<><svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Getting...</>) : (<>📍 Get Current Location</>)}
+
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <label className="text-lg font-bold text-slate-800">Location Settings</label>
+              <button type="button" onClick={handleGetLocation} disabled={loadingLocation} className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2">
+                {loadingLocation ? 'Updating...' : <><MapPin className="w-4 h-4" /> Update from GPS</>}
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div><label className="block text-xs text-gray-500 mb-1">Latitude</label><input type="number" step="any" value={formData.latitude} onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} className="input-field text-sm" placeholder="e.g., 12.971592847362951" /></div>
-              <div><label className="block text-xs text-gray-500 mb-1">Longitude</label><input type="number" step="any" value={formData.longitude} onChange={(e) => setFormData({ ...formData, longitude: e.target.value })} className="input-field text-sm" placeholder="e.g., 77.594623847362847" /></div>
+              <InputField label="Latitude" value={formData.latitude} onChange={(e) => setFormData({ ...formData, latitude: e.target.value })} placeholder="0.000000" />
+              <InputField label="Longitude" value={formData.longitude} onChange={(e) => setFormData({ ...formData, longitude: e.target.value })} placeholder="0.000000" />
             </div>
-            <p className="text-xs text-gray-400 mt-2">Location is used to calculate distances for blood requests and campaigns.</p>
           </div>
-          <div className="flex gap-4 pt-4"><button type="submit" disabled={loading} className="btn-primary flex-1">{loading ? 'Saving...' : 'Save Changes'}</button><button type="button" onClick={() => setShowPasswordModal(true)} className="btn-secondary">Change Password</button></div>
-        </form>
+        </div>
+
+        <div className="space-y-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm sticky top-6">
+            <h3 className="font-bold text-slate-800 mb-4">Account Actions</h3>
+            <div className="space-y-3">
+              <button type="submit" form="profileForm" disabled={loading} className="w-full bg-slate-900 hover:bg-black text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-slate-200">
+                {loading ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button type="button" onClick={() => setShowPasswordModal(true)} className="w-full bg-white border border-slate-200 text-slate-700 font-medium py-3 rounded-xl hover:bg-slate-50 transition-all">
+                Change Password
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+
       <Modal isOpen={showPasswordModal} onClose={() => setShowPasswordModal(false)} title="Change Password">
         <form onSubmit={handlePasswordChange} className="space-y-4">
-          <div><label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label><input type="password" value={passwordData.currentPassword} onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-2">New Password</label><input type="password" value={passwordData.newPassword} onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })} className="input-field" required /></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label><input type="password" value={passwordData.confirmPassword} onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} className="input-field" required /></div>
-          <button type="submit" disabled={loading} className="btn-primary w-full">{loading ? 'Changing...' : 'Change Password'}</button>
+          <InputField label="Current Password" type="password" value={passwordData.currentPassword} onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })} required />
+          <InputField label="New Password" type="password" value={passwordData.newPassword} onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })} required />
+          <InputField label="Confirm New Password" type="password" value={passwordData.confirmPassword} onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} required />
+          <div className="pt-4">
+            <button type="submit" disabled={loading} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-red-200">
+              {loading ? 'Updating...' : 'Update Password'}
+            </button>
+          </div>
         </form>
       </Modal>
     </div>
   )
 }
 
-// Main Dashboard Component
 const NGODashboard = () => {
+  const navItems = [
+    { path: '/ngo', label: 'Overview', icon: BarChart3 },
+    { path: '/ngo/campaigns', label: 'Campaigns', icon: Calendar },
+    { path: '/ngo/create-campaign', label: 'Create Campaign', icon: Plus },
+    { path: '/ngo/blood-requests', label: 'Request Blood', icon: Droplets },
+    { path: '/ngo/alerts', label: 'Alerts', icon: Bell },
+    { path: '/ngo/profile', label: 'Profile', icon: User },
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <main className="md:ml-64 p-4 md:p-8 pb-20 md:pb-8">
-        <Routes>
-          <Route index element={<Overview />} />
-          <Route path="campaigns" element={<Campaigns />} />
-          <Route path="create-campaign" element={<CreateCampaign />} />
-          <Route path="alerts" element={<NGOAlerts />} />
-          <Route path="request-blood" element={<NGORequestBlood />} />
-          <Route path="profile" element={<NGOProfile />} />
-        </Routes>
-      </main>
-    </div>
+    <DashboardLayout navItems={navItems}>
+      <Routes>
+        <Route path="/" element={<Overview />} />
+        <Route path="/campaigns" element={<Campaigns />} />
+        <Route path="/create-campaign" element={<CreateCampaign />} />
+        <Route path="/blood-requests" element={<NGORequestBlood />} />
+        <Route path="/alerts" element={<NGOAlerts />} />
+        <Route path="/profile" element={<NGOProfile />} />
+      </Routes>
+    </DashboardLayout>
   )
 }
 
