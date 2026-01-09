@@ -55,7 +55,7 @@ const LocationPicker = ({
 
     const handleGetCurrentLocation = () => {
         if (!navigator.geolocation) {
-            alert('Geolocation is not supported by your browser')
+            console.error('Geolocation is not supported by your browser')
             return
         }
 
@@ -76,11 +76,11 @@ const LocationPicker = ({
             },
             (error) => {
                 setGettingLocation(false)
-                let message = 'Unable to get location'
-                if (error.code === error.PERMISSION_DENIED) message = 'Location permission denied'
-                else if (error.code === error.POSITION_UNAVAILABLE) message = 'Location unavailable'
-                else if (error.code === error.TIMEOUT) message = 'Location request timed out'
-                alert(message)
+                if (error.code === error.PERMISSION_DENIED) {
+                    alert('Please allow location access in your browser settings to use this feature.')
+                } else {
+                    console.error('Error getting location:', error)
+                }
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         )

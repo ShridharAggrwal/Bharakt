@@ -692,7 +692,7 @@ const BloodBankDashboard = () => {
   ]
 
   return (
-    <DashboardLayout navItems={navItems}>
+    <DashboardLayout navItems={navItems} portalName="Blood Bank Portal">
       <Routes>
         <Route index element={<Overview />} />
         <Route path="stock" element={<BloodStock />} />

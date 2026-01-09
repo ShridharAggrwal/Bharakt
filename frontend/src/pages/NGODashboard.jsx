@@ -1156,7 +1156,7 @@ const NGODashboard = () => {
   ]
 
   return (
-    <DashboardLayout navItems={navItems}>
+    <DashboardLayout navItems={navItems} portalName="NGO Portal">
       <Routes>
         <Route path="/" element={<Overview />} />
         <Route path="/campaigns" element={<Campaigns />} />

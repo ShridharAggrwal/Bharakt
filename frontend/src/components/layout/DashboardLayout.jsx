@@ -17,7 +17,7 @@ import {
 import { Button } from "../ui/Button";
 import { cn } from "../../lib/utils";
 
-const DashboardLayout = ({ children, navItems = [] }) => {
+const DashboardLayout = ({ children, navItems = [], portalName = "Admin Portal" }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { user, logout } = useAuth();
     const location = useLocation();
@@ -91,7 +91,7 @@ const DashboardLayout = ({ children, navItems = [] }) => {
                                 </div>
                                 <div>
                                     <span className="text-xl font-bold font-serif tracking-tight text-slate-900">Bharakt</span>
-                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">Admin Portal</p>
+                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">{portalName}</p>
                                 </div>
                             </div>
                             <button

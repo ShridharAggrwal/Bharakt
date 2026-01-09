@@ -990,7 +990,7 @@ const AdminDashboard = () => {
   ]
 
   return (
-    <DashboardLayout navItems={navItems}>
+    <DashboardLayout navItems={navItems} portalName="Admin Portal">
       <Routes>
         <Route index element={<Overview />} />
         <Route path="generate-token" element={<GenerateToken />} />
