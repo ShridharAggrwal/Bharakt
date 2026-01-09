@@ -125,25 +125,49 @@ router.get('/history', auth, roleCheck('user'), async (req, res) => {
   }
 });
 
-// Get nearby campaigns and blood banks
-router.get('/nearby', auth, roleCheck('user'), async (req, res) => {
+// Get nearby campaigns and blood banks (for users and NGOs)
+router.get('/nearby', auth, async (req, res) => {
   try {
-    // Get user location
-    const userResult = await pool.query(
-      'SELECT latitude, longitude FROM users WHERE id = $1',
-      [req.user.id]
-    );
-
-    const userLat = userResult.rows[0].latitude;
-    const userLng = userResult.rows[0].longitude;
-
-    if (!userLat || !userLng) {
-      return res.status(400).json({ error: 'Your location is not set. Please update your address.' });
+    // Get location based on role
+    let userLat, userLng;
+    
+    if (req.user.role === 'user') {
+      const userResult = await pool.query(
+        'SELECT latitude, longitude FROM users WHERE id = $1',
+        [req.user.id]
+      );
+      userLat = userResult.rows[0]?.latitude;
+      userLng = userResult.rows[0]?.longitude;
+    } else if (req.user.role === 'ngo') {
+      const ngoResult = await pool.query(
+        'SELECT latitude, longitude FROM ngos WHERE id = $1',
+        [req.user.id]
+      );
+      userLat = ngoResult.rows[0]?.latitude;
+      userLng = ngoResult.rows[0]?.longitude;
+    } else if (req.user.role === 'blood_bank') {
+      const bbResult = await pool.query(
+        'SELECT latitude, longitude FROM blood_banks WHERE id = $1',
+        [req.user.id]
+      );
+      userLat = bbResult.rows[0]?.latitude;
+      userLng = bbResult.rows[0]?.longitude;
+    } else if (req.user.role === 'admin') {
+      const adminResult = await pool.query(
+        'SELECT latitude, longitude FROM admins WHERE id = $1',
+        [req.user.id]
+      );
+      userLat = adminResult.rows[0]?.latitude;
+      userLng = adminResult.rows[0]?.longitude;
     }
 
-    // Get all active campaigns
+    if (!userLat || !userLng) {
+      return res.status(400).json({ error: 'Your location is not set. Please update your profile location.' });
+    }
+
+    // Get all active campaigns with NGO contact info
     const campaignsResult = await pool.query(
-      `SELECT c.*, n.name as ngo_name, c.latitude, c.longitude
+      `SELECT c.*, n.name as ngo_name, n.email as ngo_email, n.owner_name, c.latitude, c.longitude
        FROM campaigns c
        JOIN ngos n ON c.ngo_id = n.id
        WHERE c.status = 'active'`
@@ -159,18 +183,33 @@ router.get('/nearby', auth, roleCheck('user'), async (req, res) => {
       .filter(c => c.distance <= 35000)
       .sort((a, b) => a.distance - b.distance);
 
-    // Get all blood banks
+    // Get all blood banks with stock info
     const bloodBanksResult = await pool.query(
-      `SELECT id, name, address, contact_info, latitude, longitude
-       FROM blood_banks`
+      `SELECT bb.id, bb.name, bb.email, bb.address, bb.contact_info, bb.latitude, bb.longitude
+       FROM blood_banks bb`
     );
 
-    // Filter blood banks within 35km
+    // Get stock for all blood banks
+    const stockResult = await pool.query(
+      `SELECT blood_bank_id, blood_group, units_available FROM blood_stock`
+    );
+
+    // Create stock lookup map (as object with blood_group keys)
+    const stockByBank = {};
+    stockResult.rows.forEach(s => {
+      if (!stockByBank[s.blood_bank_id]) {
+        stockByBank[s.blood_bank_id] = {};
+      }
+      stockByBank[s.blood_bank_id][s.blood_group] = s.units_available;
+    });
+
+    // Filter blood banks within 35km and add stock
     const bloodBanks = bloodBanksResult.rows
       .filter(bb => bb.latitude && bb.longitude)
       .map(bb => ({
         ...bb,
-        distance: haversineDistance(userLat, userLng, bb.latitude, bb.longitude)
+        distance: haversineDistance(userLat, userLng, bb.latitude, bb.longitude),
+        stock: stockByBank[bb.id] || []
       }))
       .filter(bb => bb.distance <= 35000)
       .sort((a, b) => a.distance - b.distance);

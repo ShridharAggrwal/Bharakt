@@ -106,7 +106,7 @@ router.get('/stats', auth, roleCheck('ngo'), async (req, res) => {
 // Create campaign
 router.post('/campaigns', auth, roleCheck('ngo'), async (req, res) => {
   try {
-    const { title, address, latitude, longitude, start_date, end_date, health_checkup_available } = req.body;
+    const { title, address, latitude, longitude, start_date, end_date, health_checkup_available, partner_bank_ids } = req.body;
 
     // Validate required fields
     if (!address) {
@@ -135,7 +135,99 @@ router.post('/campaigns', auth, roleCheck('ngo'), async (req, res) => {
       [req.user.id]
     );
 
-    res.status(201).json({ message: 'Campaign created', campaign: result.rows[0] });
+    // Send collaboration invitation emails to partner blood banks
+    let emailsSent = 0;
+    if (partner_bank_ids && partner_bank_ids.length > 0) {
+      // Get NGO info for the email
+      const ngoInfo = await pool.query(
+        'SELECT name, owner_name, email FROM ngos WHERE id = $1',
+        [req.user.id]
+      );
+      const ngo = ngoInfo.rows[0];
+
+      // Get blood bank emails
+      const banksResult = await pool.query(
+        'SELECT id, name, email FROM blood_banks WHERE id = ANY($1::int[])',
+        [partner_bank_ids]
+      );
+
+      // Format dates for email
+      const startDateFormatted = new Date(start_date).toLocaleString('en-IN', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', 
+        hour: '2-digit', minute: '2-digit'
+      });
+      const endDateFormatted = new Date(end_date).toLocaleString('en-IN', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+
+      // Send email to each blood bank
+      const emailService = require('../services/email');
+      for (const bank of banksResult.rows) {
+        if (bank.email) {
+          try {
+            await emailService.sendEmail({
+              to: bank.email,
+              subject: `Collaboration Invitation: ${title} - Blood Donation Campaign`,
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 30px; border-radius: 12px 12px 0 0;">
+                    <h1 style="color: white; margin: 0; font-size: 24px;">🩸 Blood Donation Campaign Invitation</h1>
+                  </div>
+                  <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                    <p style="font-size: 16px; color: #374151;">Dear <strong>${bank.name}</strong> Team,</p>
+                    
+                    <p style="color: #4b5563; line-height: 1.6;">
+                      We are pleased to invite you to collaborate with us on an upcoming blood donation campaign. 
+                      Your expertise and support would be invaluable in making this event a success.
+                    </p>
+
+                    <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                      <h3 style="color: #b91c1c; margin: 0 0 10px 0;">${title}</h3>
+                      <p style="color: #7f1d1d; margin: 5px 0;"><strong>📍 Location:</strong> ${address}</p>
+                      <p style="color: #7f1d1d; margin: 5px 0;"><strong>📅 Start:</strong> ${startDateFormatted}</p>
+                      <p style="color: #7f1d1d; margin: 5px 0;"><strong>📅 End:</strong> ${endDateFormatted}</p>
+                      ${health_checkup_available ? '<p style="color: #7f1d1d; margin: 5px 0;"><strong>⚕️</strong> Free health checkups will be offered to donors</p>' : ''}
+                    </div>
+
+                    <p style="color: #4b5563; line-height: 1.6;">
+                      We believe that your participation would significantly enhance the impact of this campaign 
+                      and help save more lives in our community.
+                    </p>
+
+                    <p style="color: #4b5563; line-height: 1.6;">
+                      If you are interested in partnering with us, please reach out at your earliest convenience.
+                    </p>
+
+                    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                      <p style="color: #6b7280; margin: 5px 0;">With regards,</p>
+                      <p style="color: #374151; font-weight: bold; margin: 5px 0;">${ngo.owner_name || ngo.name}</p>
+                      <p style="color: #6b7280; margin: 5px 0;">${ngo.name}</p>
+                      ${ngo.email ? `<p style="color: #6b7280; margin: 5px 0;">Email: ${ngo.email}</p>` : ''}
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: #f3f4f6; border-radius: 8px; text-align: center;">
+                      <p style="color: #6b7280; font-size: 12px; margin: 0;">
+                        This is an automated message from the Bharakt Blood Donation Platform.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              `
+            });
+            emailsSent++;
+          } catch (emailError) {
+            console.error(`Failed to send email to ${bank.email}:`, emailError);
+          }
+        }
+      }
+    }
+
+    res.status(201).json({ 
+      message: 'Campaign created', 
+      campaign: result.rows[0],
+      emailsSent 
+    });
   } catch (error) {
     console.error('Create campaign error:', error);
     res.status(500).json({ error: 'Failed to create campaign' });

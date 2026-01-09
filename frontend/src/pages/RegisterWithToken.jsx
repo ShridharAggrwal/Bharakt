@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
-import { useGeolocation } from "../hooks/useGeolocation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Droplets,
@@ -17,12 +16,12 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
+import LocationPicker from "../components/common/LocationPicker";
 
 const RegisterWithToken = () => {
   const { type, token } = useParams();
   const navigate = useNavigate();
   const { registerWithToken } = useAuth();
-  const geolocation = useGeolocation();
 
   const [validating, setValidating] = useState(true);
   const [tokenValid, setTokenValid] = useState(false);
@@ -58,19 +57,13 @@ const RegisterWithToken = () => {
       }
   );
 
-  const handleGetLocation = () => {
-    geolocation.getCurrentLocation();
+  const handleLocationChange = (coords) => {
+    setFormData((prev) => ({
+      ...prev,
+      latitude: coords.lat.toString(),
+      longitude: coords.lng.toString(),
+    }));
   };
-
-  useEffect(() => {
-    if (geolocation.latitude && geolocation.longitude) {
-      setFormData((prev) => ({
-        ...prev,
-        latitude: geolocation.latitude.toString(),
-        longitude: geolocation.longitude.toString(),
-      }));
-    }
-  }, [geolocation.latitude, geolocation.longitude]);
 
   useEffect(() => {
     const validateToken = async () => {
@@ -349,66 +342,19 @@ const RegisterWithToken = () => {
             </div>
 
             {/* Location */}
-            <div className="space-y-4 bg-slate-50/50 rounded-2xl p-4 border border-slate-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <label className="text-sm font-medium text-slate-700 block">Location</label>
-                  <p className="text-xs text-slate-500">Required for blood matching</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleGetLocation}
-                  disabled={geolocation.loading}
-                  className="bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 text-xs h-9"
-                >
-                  {geolocation.loading ? (
-                    <Loader2 className="w-3 h-3 animate-spin mr-2" />
-                  ) : (
-                    <MapPin className="w-3 h-3 mr-2 text-red-500" />
-                  )}
-                  {geolocation.loading ? "Locating..." : "Get Location"}
-                </Button>
-              </div>
-
-              {geolocation.error && (
-                <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-200">
-                  {geolocation.error}. Please enter coordinates manually.
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider text-slate-400 font-medium ml-1">
-                    Latitude
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    name="latitude"
-                    value={formData.latitude}
-                    onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 text-sm text-slate-900 focus:outline-none focus:border-red-500/50 transition-all"
-                    placeholder="0.0000"
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider text-slate-400 font-medium ml-1">
-                    Longitude
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    name="longitude"
-                    value={formData.longitude}
-                    onChange={handleChange}
-                    className="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 text-sm text-slate-900 focus:outline-none focus:border-red-500/50 transition-all"
-                    placeholder="0.0000"
-                    required
-                  />
-                </div>
-              </div>
+            <div className="space-y-3">
+              <label className="text-xs font-medium text-slate-700 ml-1">Location</label>
+              <p className="text-xs text-slate-500 ml-1">Required for blood matching - click on map or search</p>
+              <LocationPicker
+                value={formData.latitude && formData.longitude ? {
+                  lat: parseFloat(formData.latitude),
+                  lng: parseFloat(formData.longitude)
+                } : null}
+                onChange={handleLocationChange}
+                showProfileButton={false}
+                placeholder="Search for your location..."
+                required
+              />
             </div>
 
             {/* Passwords */}

@@ -84,14 +84,23 @@ const DashboardLayout = ({ children, navItems = [] }) => {
                         <div className="absolute -bottom-10 right-0 w-36 h-36 bg-gradient-to-br from-red-200/50 to-rose-300/40 rounded-full blur-3xl" />
 
                         {/* Logo - Desktop */}
-                        <div className="hidden lg:flex items-center gap-3 mb-10 px-2 relative z-10">
-                            <div className="w-11 h-11 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30 p-2.5">
-                                <img src="/blood-drop.svg" alt="logo" className="w-full h-full object-contain brightness-0 invert" />
+                        <div className="hidden lg:flex items-center justify-between mb-10 px-2 relative z-10">
+                            <div className="flex items-center gap-3">
+                                <div className="w-11 h-11 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30 p-2.5">
+                                    <img src="/blood-drop.svg" alt="logo" className="w-full h-full object-contain brightness-0 invert" />
+                                </div>
+                                <div>
+                                    <span className="text-xl font-bold font-serif tracking-tight text-slate-900">Bharakt</span>
+                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">Admin Portal</p>
+                                </div>
                             </div>
-                            <div>
-                                <span className="text-xl font-bold font-serif tracking-tight text-slate-900">Bharakt</span>
-                                <p className="text-[10px] text-slate-400 uppercase tracking-widest">Admin Portal</p>
-                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="p-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 transition-all shadow-sm border border-red-100"
+                                title="Logout"
+                            >
+                                <LogOut className="w-5 h-5" />
+                            </button>
                         </div>
 
                         {/* User Profile Summary */}
@@ -159,14 +168,6 @@ const DashboardLayout = ({ children, navItems = [] }) => {
                                     <span>Home</span>
                                 </Button>
                             </Link>
-                            <Button
-                                variant="ghost"
-                                onClick={handleLogout}
-                                className="w-full justify-start gap-3 hover:bg-red-50 text-slate-600 hover:text-red-600 rounded-xl"
-                            >
-                                <LogOut className="w-5 h-5" />
-                                <span>Logout</span>
-                            </Button>
                         </div>
                     </div>
                 </aside>

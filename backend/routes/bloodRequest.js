@@ -120,7 +120,7 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Get alerts (active requests within 35km)
+// Get alerts (active requests within 35km) with requester contact info
 router.get('/alerts', auth, async (req, res) => {
   try {
     const { id, role } = req.user;
@@ -162,13 +162,44 @@ router.get('/alerts', auth, async (req, res) => {
     );
 
     // Filter requests within 35km
-    const alerts = requestsResult.rows
+    let alerts = requestsResult.rows
       .map(r => ({
         ...r,
         distance: haversineDistance(userLat, userLng, r.latitude, r.longitude)
       }))
       .filter(r => r.distance <= 35000)
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    // Enrich with requester contact info
+    for (let alert of alerts) {
+      let requesterInfo = {};
+      if (alert.requester_type === 'user') {
+        const userInfo = await pool.query(
+          'SELECT name, email, phone FROM users WHERE id = $1',
+          [alert.requester_id]
+        );
+        if (userInfo.rows[0]) {
+          requesterInfo = userInfo.rows[0];
+        }
+      } else if (alert.requester_type === 'ngo') {
+        const ngoInfo = await pool.query(
+          'SELECT name, email, owner_name FROM ngos WHERE id = $1',
+          [alert.requester_id]
+        );
+        if (ngoInfo.rows[0]) {
+          requesterInfo = { name: ngoInfo.rows[0].name, email: ngoInfo.rows[0].email, contact_name: ngoInfo.rows[0].owner_name };
+        }
+      } else if (alert.requester_type === 'blood_bank') {
+        const bbInfo = await pool.query(
+          'SELECT name, email, contact_info FROM blood_banks WHERE id = $1',
+          [alert.requester_id]
+        );
+        if (bbInfo.rows[0]) {
+          requesterInfo = { name: bbInfo.rows[0].name, email: bbInfo.rows[0].email, phone: bbInfo.rows[0].contact_info };
+        }
+      }
+      alert.requester = requesterInfo;
+    }
 
     res.json(alerts);
   } catch (error) {
