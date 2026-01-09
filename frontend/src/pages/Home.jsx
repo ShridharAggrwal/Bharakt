@@ -100,8 +100,9 @@ function Header() {
         : "bg-transparent py-5"
         }`}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        {/* Desktop Layout */}
+        <div className="hidden lg:flex items-center justify-between">
           <motion.div
             className="flex items-center gap-2.5 cursor-pointer"
             whileHover={{ scale: 1.02 }}
@@ -115,7 +116,7 @@ function Header() {
             </span>
           </motion.div>
 
-          <nav className="hidden lg:flex items-center">
+          <nav className="flex items-center">
             <div className={`flex items-center backdrop-blur-sm rounded-full px-1.5 py-1.5 border transition-all duration-300 ${isScrolled
               ? "bg-slate-50/80 border-slate-200/50"
               : "bg-white/10 border-white/20"
@@ -140,8 +141,7 @@ function Header() {
             </div>
           </nav>
 
-          <div className="hidden lg:flex items-center gap-3">
-
+          <div className="flex items-center gap-3">
             {!user ? (
               <>
                 <Button
@@ -176,63 +176,44 @@ function Header() {
               </Button>
             )}
           </div>
-
-          <button
-            className={`lg:hidden p-2 rounded-full transition-colors ${isScrolled ? "hover:bg-slate-100 text-slate-900" : "hover:bg-white/10 text-white"}`}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
         </div>
-      </div>
 
-      {isMobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-slate-100"
-        >
-          <div className="px-6 py-6 space-y-2">
-            {navLinks.map((item) => (
-              <button
-                key={item}
-                onClick={() => {
-                  setActiveLink(item);
-                  setIsMobileMenuOpen(false);
-                  const element = document.getElementById(item.toLowerCase().replace(/\s+/g, '-'));
-                  if (element) element.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className={`block w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeLink === item
-                  ? "bg-slate-900 text-white"
-                  : "text-slate-700 hover:bg-slate-100"
-                  }`}
-              >
-                {item}
-              </button>
-            ))}
-            <div className="pt-4 border-t border-slate-100 space-y-3">
-              <Button
-                onClick={handleRequestClick}
-                className="w-full bg-red-50 text-red-600 hover:bg-red-100 rounded-full h-11"
-              >
-                Request Blood
-              </Button>
+        {/* Mobile Layout */}
+        <div className="lg:hidden space-y-3">
+          {/* Row 1: Logo left + Auth buttons right */}
+          <div className="flex items-center justify-between">
+            <motion.div
+              className="flex items-center gap-2 cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              onClick={() => navigate('/')}
+            >
+              <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
+                <Droplets className="w-4 h-4 text-white" />
+              </div>
+              <span className={`text-base font-semibold transition-colors duration-300 ${isScrolled ? "text-slate-900" : "text-white"}`}>
+                Bharakt
+              </span>
+            </motion.div>
+
+            <div className="flex items-center gap-2">
               {!user ? (
                 <>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     onClick={() => navigate('/login')}
-                    className="w-full rounded-full h-11 border-slate-200 text-slate-700"
+                    className={`rounded-full transition-all duration-300 px-3 h-8 text-xs font-medium ${isScrolled
+                      ? "text-slate-700 hover:bg-slate-100"
+                      : "text-white hover:bg-white/10"
+                      }`}
                   >
                     Login
                   </Button>
                   <Button
                     onClick={() => navigate('/register')}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full h-11"
+                    className={`rounded-full transition-all duration-300 px-4 h-8 text-xs font-medium ${isScrolled
+                      ? "bg-red-600 text-white hover:bg-red-700"
+                      : "bg-white text-slate-900 hover:bg-slate-100"
+                      }`}
                   >
                     Register
                   </Button>
@@ -240,15 +221,44 @@ function Header() {
               ) : (
                 <Button
                   onClick={() => navigate(getDashboardRoute())}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full h-11"
+                  className={`rounded-full transition-all duration-300 px-4 h-8 text-xs font-medium ${isScrolled
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : "bg-white text-slate-900 hover:bg-slate-100"
+                    }`}
                 >
                   Dashboard
                 </Button>
               )}
             </div>
           </div>
-        </motion.div>
-      )}
+
+          {/* Row 2: Navbar - Centered, wider */}
+          <div className="flex justify-center">
+            <div className={`flex items-center backdrop-blur-sm rounded-full px-2 py-1.5 border transition-all duration-300 ${isScrolled
+              ? "bg-slate-50/80 border-slate-200/50"
+              : "bg-white/10 border-white/20"
+              }`}>
+              {navLinks.map((item) => (
+                <button
+                  key={item}
+                  onClick={() => {
+                    setActiveLink(item);
+                    const element = document.getElementById(item.toLowerCase().replace(/\s+/g, '-'));
+                    if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    else if (item === 'Home') window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all duration-300 whitespace-nowrap ${activeLink === item
+                    ? (isScrolled ? "bg-slate-900 text-white" : "bg-white text-slate-900")
+                    : (isScrolled ? "text-slate-600 hover:text-slate-900" : "text-white/80 hover:text-white")
+                    }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </motion.header>
   );
 }

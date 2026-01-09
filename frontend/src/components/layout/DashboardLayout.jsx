@@ -12,13 +12,14 @@ import {
     Settings,
     Bell,
     Home,
+    Plus,
 } from "lucide-react";
 
 import { Button } from "../ui/Button";
 import { cn } from "../../lib/utils";
 
 const DashboardLayout = ({ children, navItems = [], portalName = "Admin Portal" }) => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
     const { user, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -58,23 +59,26 @@ const DashboardLayout = ({ children, navItems = [], portalName = "Admin Portal" 
                     <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-rose-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-red-200">
                         <span className="text-lg">🩸</span>
                     </div>
-                    <span className="font-bold text-lg text-slate-900">Bharakt</span>
+                    <div>
+                        <span className="font-bold text-lg text-slate-900">Bharakt</span>
+                        <p className="text-[9px] text-slate-400 uppercase tracking-wider -mt-1">{portalName}</p>
+                    </div>
                 </div>
                 <button
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600"
+                    onClick={handleLogout}
+                    className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-all"
+                    title="Logout"
                 >
-                    {isSidebarOpen ? <X /> : <Menu />}
+                    <LogOut className="w-5 h-5" />
                 </button>
             </div>
 
-            <div className="relative z-10 flex min-h-screen pt-16 lg:pt-0">
-                {/* Sidebar */}
+            <div className="relative z-10 flex min-h-screen pt-16 pb-20 lg:pt-0 lg:pb-0">
+                {/* Desktop Sidebar */}
                 <aside
                     className={cn(
-                        "fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:fixed lg:h-screen",
-                        "bg-gradient-to-b from-white/90 via-red-50/40 to-rose-50/50 backdrop-blur-xl border-r border-rose-100/50 shadow-xl shadow-red-100/20",
-                        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                        "hidden lg:block fixed inset-y-0 left-0 z-40 w-72",
+                        "bg-gradient-to-b from-white/90 via-red-50/40 to-rose-50/50 backdrop-blur-xl border-r border-rose-100/50 shadow-xl shadow-red-100/20"
                     )}
                 >
                     <div className="flex flex-col h-full p-6 relative overflow-hidden">
@@ -84,7 +88,7 @@ const DashboardLayout = ({ children, navItems = [], portalName = "Admin Portal" 
                         <div className="absolute -bottom-10 right-0 w-36 h-36 bg-gradient-to-br from-red-200/50 to-rose-300/40 rounded-full blur-3xl" />
 
                         {/* Logo - Desktop */}
-                        <div className="hidden lg:flex items-center justify-between mb-10 px-2 relative z-10">
+                        <div className="flex items-center justify-between mb-10 px-2 relative z-10">
                             <div className="flex items-center gap-3">
                                 <div className="w-11 h-11 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30 p-2.5">
                                     <img src="/blood-drop.svg" alt="logo" className="w-full h-full object-contain brightness-0 invert" />
@@ -134,7 +138,6 @@ const DashboardLayout = ({ children, navItems = [], portalName = "Admin Portal" 
                                     <Link
                                         key={item.path}
                                         to={item.path}
-                                        onClick={() => setIsSidebarOpen(false)}
                                         className={cn(
                                             "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden border",
                                             isActive
@@ -172,14 +175,6 @@ const DashboardLayout = ({ children, navItems = [], portalName = "Admin Portal" 
                     </div>
                 </aside>
 
-                {/* Backdrop for mobile sidebar */}
-                {isSidebarOpen && (
-                    <div
-                        className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm lg:hidden"
-                        onClick={() => setIsSidebarOpen(false)}
-                    />
-                )}
-
                 {/* Main Content */}
                 <main className="flex-1 w-full min-w-0 overflow-hidden lg:pl-72">
                     <div className="h-full overflow-y-auto p-4 lg:p-8 custom-scrollbar">
@@ -188,6 +183,131 @@ const DashboardLayout = ({ children, navItems = [], portalName = "Admin Portal" 
                         </div>
                     </div>
                 </main>
+            </div>
+
+            {/* Mobile Bottom Navigation */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200/50 shadow-lg">
+                <div className="flex items-center justify-around px-4 py-2 relative">
+                    {/* Overview (First Item) */}
+                    {navItems.length > 0 && (() => {
+                        const item = navItems[0];
+                        const isActive = location.pathname === item.path;
+                        const Icon = item.icon;
+                        return (
+                            <Link
+                                key={item.path}
+                                to={item.path}
+                                className={cn(
+                                    "flex flex-col items-center justify-center py-2 px-4 rounded-xl transition-all relative",
+                                    isActive ? "text-red-600" : "text-slate-400"
+                                )}
+                            >
+                                <Icon className={cn("w-6 h-6", isActive && "scale-110")} />
+                                <span className={cn("text-[10px] mt-1 font-medium", isActive && "font-bold")}>{item.label}</span>
+                            </Link>
+                        );
+                    })()}
+
+                    {/* Center Plus Button */}
+                    <button
+                        onClick={() => setIsQuickActionsOpen(!isQuickActionsOpen)}
+                        className={cn(
+                            "w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 -mt-6",
+                            isQuickActionsOpen
+                                ? "bg-slate-900 rotate-45"
+                                : "bg-gradient-to-br from-red-500 to-rose-600 shadow-red-200"
+                        )}
+                    >
+                        <Plus className="w-7 h-7 text-white" />
+                    </button>
+
+                    {/* Profile (Last Item) */}
+                    {navItems.length > 1 && (() => {
+                        const item = navItems[navItems.length - 1];
+                        const isActive = location.pathname === item.path;
+                        const Icon = item.icon;
+                        return (
+                            <Link
+                                key={item.path}
+                                to={item.path}
+                                className={cn(
+                                    "flex flex-col items-center justify-center py-2 px-4 rounded-xl transition-all relative",
+                                    isActive ? "text-red-600" : "text-slate-400"
+                                )}
+                            >
+                                <Icon className={cn("w-6 h-6", isActive && "scale-110")} />
+                                <span className={cn("text-[10px] mt-1 font-medium", isActive && "font-bold")}>{item.label}</span>
+                            </Link>
+                        );
+                    })()}
+                </div>
+
+                {/* Nav Items Popup - Outside of flex container for proper centering */}
+                <AnimatePresence>
+                    {isQuickActionsOpen && navItems.length > 2 && (
+                        <>
+                            {/* Backdrop - stops above bottom nav */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="fixed inset-0 bg-black/30 z-40"
+                                onClick={() => setIsQuickActionsOpen(false)}
+                                style={{ bottom: '70px' }}
+                            />
+                            {/* Centered Popup */}
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                className="fixed bottom-24 left-0 right-0 mx-auto bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 w-[280px]"
+                            >
+                                <div className="p-3">
+                                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-1">Quick Access</p>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {navItems.slice(1, -1).map((item, index) => {
+                                            const Icon = item.icon;
+                                            const isActive = location.pathname === item.path;
+                                            const colors = [
+                                                { bg: 'bg-rose-50', icon: 'text-rose-600', border: 'border-rose-100' },
+                                                { bg: 'bg-blue-50', icon: 'text-blue-600', border: 'border-blue-100' },
+                                                { bg: 'bg-emerald-50', icon: 'text-emerald-600', border: 'border-emerald-100' },
+                                                { bg: 'bg-purple-50', icon: 'text-purple-600', border: 'border-purple-100' },
+                                                { bg: 'bg-amber-50', icon: 'text-amber-600', border: 'border-amber-100' },
+                                                { bg: 'bg-cyan-50', icon: 'text-cyan-600', border: 'border-cyan-100' },
+                                            ];
+                                            const color = colors[index % colors.length];
+                                            return (
+                                                <Link
+                                                    key={item.path}
+                                                    to={item.path}
+                                                    onClick={() => setIsQuickActionsOpen(false)}
+                                                    className={cn(
+                                                        "flex flex-col items-center justify-center p-3 rounded-xl border transition-all hover:scale-105 hover:shadow-md",
+                                                        isActive ? `${color.bg} ${color.border}` : "bg-slate-50 border-slate-100 hover:bg-white"
+                                                    )}
+                                                >
+                                                    <div className={cn(
+                                                        "w-10 h-10 rounded-xl flex items-center justify-center mb-2",
+                                                        color.bg
+                                                    )}>
+                                                        <Icon className={cn("w-5 h-5", color.icon)} />
+                                                    </div>
+                                                    <span className="text-[10px] font-semibold text-slate-700 text-center leading-tight">{item.label}</span>
+                                                    {item.badge > 0 && (
+                                                        <span className="mt-1 px-1.5 py-0.5 bg-red-500 text-white text-[8px] font-bold rounded-full">
+                                                            {item.badge > 9 ? '9+' : item.badge}
+                                                        </span>
+                                                    )}
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );
