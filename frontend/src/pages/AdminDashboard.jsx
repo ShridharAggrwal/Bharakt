@@ -24,7 +24,8 @@ import {
   Trash2,
   MoreVertical,
   ShieldAlert,
-  ShieldCheck
+  ShieldCheck,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { cn } from "../lib/utils";
@@ -51,79 +52,112 @@ const Overview = () => {
   }, []);
 
   const statCards = [
-    { label: "Approved Users", value: stats.approvedUsers, icon: Users, gradient: "from-blue-500 to-blue-600", bgLight: "bg-blue-50", textColor: "text-blue-600", desc: "Registered Members" },
-    { label: "Approved NGOs", value: stats.approvedNgos, icon: Handshake, gradient: "from-emerald-500 to-emerald-600", bgLight: "bg-emerald-50", textColor: "text-emerald-600", desc: "Active Organizations" },
-    { label: "Blood Banks", value: stats.approvedBloodBanks, icon: Building2, gradient: "from-purple-500 to-purple-600", bgLight: "bg-purple-50", textColor: "text-purple-600", desc: "Verified Facilities" },
-    { label: "Total Donations", value: stats.totalDonations, icon: Droplets, gradient: "from-rose-500 to-red-600", bgLight: "bg-rose-50", textColor: "text-rose-600", desc: "Lives Saved" },
+    { label: "Approved Users", value: stats.approvedUsers, icon: Users, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100", link: "/admin/users" },
+    { label: "Approved NGOs", value: stats.approvedNgos, icon: Handshake, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", link: "/admin/ngos" },
+    { label: "Blood Banks", value: stats.approvedBloodBanks, icon: Building2, color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-100", link: "/admin/blood-banks" },
+    { label: "Total Donations", value: stats.totalDonations, icon: Droplets, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", link: "/admin/request-blood" },
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-6 max-w-7xl mx-auto h-[calc(100vh-6rem)] flex flex-col">
+      <div className="text-center shrink-0">
         <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">Admin Dashboard</h1>
-        <p className="text-slate-500">Manage and monitor the BloodLink platform</p>
+        <p className="text-slate-500">Manage and monitor the Bharakt platform</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat, index) => (
-          <div
-            key={stat.label}
-            className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-500 hover:-translate-y-1"
-          >
-            {/* Gradient accent bar */}
-            <div className={cn("absolute top-0 left-0 right-0 h-1 bg-gradient-to-r", stat.gradient)} />
-
-            {/* Icon with gradient background */}
-            <div className="flex items-start justify-between mb-5">
-              <div className={cn("p-3.5 rounded-2xl bg-gradient-to-br shadow-lg", stat.gradient)}>
-                <stat.icon className="w-6 h-6 text-white" />
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 shrink-0">
+        {statCards.map((stat) => (
+          <Link to={stat.link} key={stat.label} className="block group">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 h-full flex flex-col justify-between group-hover:-translate-y-1">
+              <div className="flex items-start justify-between mb-4">
+                <div className={cn("p-3 rounded-xl transition-colors", stat.bg)}>
+                  <stat.icon className={cn("w-6 h-6", stat.color)} />
+                </div>
+                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-600 transition-colors">
+                  <ChevronRight className="w-4 h-4" />
+                </div>
               </div>
-              <div className={cn("text-xs font-bold px-2.5 py-1 rounded-full", stat.bgLight, stat.textColor)}>
-                #{index + 1}
+              <div className="mt-auto">
+                <h3 className="text-3xl font-bold text-slate-900 mb-1">{stat.value.toLocaleString()}</h3>
+                <p className="text-sm text-slate-500 font-medium">{stat.label}</p>
               </div>
             </div>
-
-            {/* Stats content */}
-            <div className="space-y-1">
-              <h3 className="text-4xl font-bold text-slate-900 tracking-tight">{stat.value.toLocaleString()}</h3>
-              <p className="text-slate-600 font-semibold">{stat.label}</p>
-              <p className={cn("text-xs font-medium pt-2 flex items-center gap-1.5", stat.textColor)}>
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
-                {stat.desc}
-              </p>
-            </div>
-
-            {/* Decorative gradient blob */}
-            <div className={cn("absolute -bottom-8 -right-8 w-24 h-24 rounded-full opacity-10 bg-gradient-to-br blur-2xl group-hover:opacity-20 transition-opacity", stat.gradient)} />
-          </div>
+          </Link>
         ))}
       </div>
 
-      {/* Quick Actions Section */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-8 shadow-lg shadow-slate-200/50">
-          <h2 className="text-xl font-bold text-slate-900 mb-4">Platform Overview</h2>
-          <p className="text-slate-500 mb-6">Welcome to the BloodLink admin portal. From here you can manage users, NGOs, blood banks, and monitor platform activity.</p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border border-slate-100">
-              <p className="text-sm text-slate-500">Active Sessions</p>
-              <p className="text-2xl font-bold text-slate-900">--</p>
-            </div>
-            <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border border-slate-100">
-              <p className="text-sm text-slate-500">Pending Requests</p>
-              <p className="text-2xl font-bold text-slate-900">--</p>
-            </div>
+      {/* Bottom Section: Quick Actions & System Status */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Quick Actions - Horizontal Cards with more height */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex flex-col justify-center">
+          <h2 className="text-sm font-bold text-slate-900 mb-6 uppercase tracking-wider">Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 grow">
+            <Link to="/admin/generate-token" className="group">
+              <div className="border border-slate-100 bg-slate-50/50 rounded-xl p-8 hover:border-red-200 hover:bg-red-50/30 transition-all flex items-center gap-5 h-full">
+                <div className="p-4 bg-white text-red-600 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <LinkIcon className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <span className="font-bold text-slate-800 text-sm block mb-0.5">Generate Token</span>
+                  <span className="text-xs text-slate-500 font-medium">Invitations</span>
+                </div>
+              </div>
+            </Link>
+            <Link to="/admin/users" className="group">
+              <div className="border border-slate-100 bg-slate-50/50 rounded-xl p-8 hover:border-blue-200 hover:bg-blue-50/30 transition-all flex items-center gap-5 h-full">
+                <div className="p-4 bg-white text-blue-600 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <Users className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <span className="font-bold text-slate-800 text-sm block mb-0.5">Manage Users</span>
+                  <span className="text-xs text-slate-500 font-medium">Verification</span>
+                </div>
+              </div>
+            </Link>
+            <Link to="/admin/request-blood" className="group">
+              <div className="border border-slate-100 bg-slate-50/50 rounded-xl p-8 hover:border-rose-200 hover:bg-rose-50/30 transition-all flex items-center gap-5 h-full">
+                <div className="p-4 bg-white text-rose-600 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <Droplets className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <span className="font-bold text-slate-800 text-sm block mb-0.5">Request Blood</span>
+                  <span className="text-xs text-slate-500 font-medium">Emergency</span>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-red-500 to-rose-600 rounded-[1.5rem] p-8 text-white shadow-xl shadow-red-200/50">
-          <h2 className="text-xl font-bold mb-2">Quick Actions</h2>
-          <p className="text-white/80 text-sm mb-6">Generate tokens for new organizations</p>
-          <Link to="/admin/generate-token">
-            <Button className="w-full bg-white text-red-600 hover:bg-white/90 font-semibold shadow-lg">
-              Generate Token
-            </Button>
-          </Link>
+        {/* System Health - Stacked Metrics */}
+        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex flex-col justify-center">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">System Health</h2>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full border border-green-100">
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs font-bold text-green-700">Operational</span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-8">
+            <div className="space-y-3">
+              <div className="flex justify-between text-xs font-bold uppercase text-slate-500 tracking-wider">
+                <span>Storage Usage</span>
+                <span className="text-slate-900">24%</span>
+              </div>
+              <div className="w-full bg-slate-100 h-3 overflow-hidden rounded-full">
+                <div className="h-full bg-blue-500 w-[24%]" />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between text-xs font-bold uppercase text-slate-500 tracking-wider">
+                <span>API Latency</span>
+                <span className="text-slate-900">45ms</span>
+              </div>
+              <div className="w-full bg-slate-100 h-3 overflow-hidden rounded-full">
+                <div className="h-full bg-emerald-500 w-[85%]" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -134,6 +168,7 @@ const Overview = () => {
 const GenerateToken = () => {
   const [type, setType] = useState('ngo')
   const [email, setEmail] = useState('')
+  const [sentEmail, setSentEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [generatedData, setGeneratedData] = useState(null)
   const [toast, setToast] = useState(null)
@@ -145,6 +180,7 @@ const GenerateToken = () => {
       const response = await api.post('/admin/generate-token', { type, email: email || undefined })
       setGeneratedData(response.data)
       setToast({ type: 'success', message: 'Token generated successfully!' })
+      setSentEmail(email)
       setEmail('')
     } catch (error) {
       setToast({ type: 'error', message: 'Failed to generate token' })
@@ -202,7 +238,7 @@ const GenerateToken = () => {
               </Button>
             </div>
             <p className="text-xs text-slate-500 mt-3">Expires: {new Date(generatedData.expiresAt).toLocaleString()}</p>
-            {email && <p className="text-sm text-green-600 mt-2 flex items-center gap-2"><Check className="w-4 h-4" /> Link sent to {email}</p>}
+            {sentEmail && <p className="text-sm text-green-600 mt-2 flex items-center gap-2"><Check className="w-4 h-4" /> Link sent to {sentEmail}</p>}
           </div>
         )}
       </div>
@@ -214,50 +250,121 @@ const GenerateToken = () => {
 const UsersList = () => {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [toast, setToast] = useState(null)
+  const [confirmModal, setConfirmModal] = useState({ open: false, type: '', id: null, name: '' })
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const fetchUsers = async () => {
+    try {
+      const response = await api.get('/admin/users')
+      setUsers(response.data)
+    } catch (error) { console.log('Failed to fetch users') } finally { setLoading(false) }
+  }
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await api.get('/admin/users')
-        setUsers(response.data)
-      } catch (error) { console.log('Failed to fetch users') } finally { setLoading(false) }
-    }
     fetchUsers()
   }, [])
+
+  const handleAction = async (action, id) => {
+    try {
+      if (action === 'suspend') await api.put(`/admin/suspend/user/${id}`)
+      else if (action === 'activate') await api.put(`/admin/activate/user/${id}`)
+      else if (action === 'delete') await api.delete(`/admin/delete/user/${id}`)
+
+      setToast({ type: 'success', message: `User ${action}ed successfully` })
+      if (action === 'delete') setConfirmModal({ open: false, type: '', id: null, name: '' })
+      fetchUsers()
+    } catch (error) { setToast({ type: 'error', message: `Failed to ${action} user` }) }
+  }
+
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (user.blood_group && user.blood_group.toLowerCase().includes(searchTerm.toLowerCase()))
+  )
 
   if (loading) return <div className="flex justify-center p-12"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div></div>
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-slate-800 mb-2">Users ({users.length})</h1>
-      <p className="text-slate-500 mb-8">Manage registered users</p>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users.map(user => (
-          <div key={user.id} className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all duration-300 group hover:-translate-y-0.5">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-red-100 group-hover:scale-110 transition-transform">
-                {user.name.charAt(0)}
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-slate-800 truncate">{user.name}</h3>
-                <p className="text-sm text-slate-500 truncate">{user.email}</p>
-              </div>
-            </div>
-            <div className="space-y-3 pt-4 border-t border-slate-100">
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Blood Group</span>
-                <span className="text-slate-700 font-bold bg-slate-100 px-2 py-0.5 rounded text-xs">{user.blood_group || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Verified</span>
-                <span className={`px-2 py-0.5 rounded text-xs font-medium ${user.is_verified ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"}`}>
-                  {user.is_verified ? "Verified" : "Pending"}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Users ({filteredUsers.length})</h1>
+          <p className="text-slate-500">Manage registered users</p>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 w-full md:w-64"
+          />
+        </div>
       </div>
+
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+
+      {filteredUsers.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 border-dashed">
+          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Users className="w-6 h-6 text-slate-400" />
+          </div>
+          <p className="text-slate-500 font-medium">No users found matching "{searchTerm}"</p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredUsers.map(user => (
+            <div key={user.id} className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all duration-300 group hover:-translate-y-0.5">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-red-100 group-hover:scale-110 transition-transform">
+                  {user.name.charAt(0)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-bold text-slate-800 truncate">{user.name}</h3>
+                  <p className="text-sm text-slate-500 truncate">{user.email}</p>
+                </div>
+              </div>
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500">Blood Group</span>
+                  <span className="text-slate-700 font-bold bg-slate-100 px-2 py-0.5 rounded text-xs">{user.blood_group || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500">Status</span>
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${user.status === 'suspended' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (user.is_verified ? "bg-green-50 text-green-700 border border-green-200" : "bg-blue-50 text-blue-700 border border-blue-200")}`}>
+                    {user.status === 'suspended' ? 'Suspended' : (user.is_verified ? "Verified" : "Active")}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  {user.status === 'suspended' ? (
+                    <button onClick={() => handleAction('activate', user.id)} className="p-2 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg transition-colors" title="Activate">
+                      <ShieldCheck className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button onClick={() => handleAction('suspend', user.id)} className="p-2 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded-lg transition-colors" title="Suspend">
+                      <ShieldAlert className="w-4 h-4" />
+                    </button>
+                  )}
+                  <button onClick={() => setConfirmModal({ open: true, type: 'user', id: user.id, name: user.name })} className="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Delete">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Modal isOpen={confirmModal.open} onClose={() => setConfirmModal({ open: false, type: '', id: null, name: '' })} title="Confirm Delete">
+        <p className="text-slate-600 mb-6">Are you sure you want to delete user <span className="font-semibold text-slate-900">{confirmModal.name}</span>? This action cannot be undone.</p>
+        <div className="flex justify-end gap-3">
+          <button onClick={() => setConfirmModal({ open: false, type: '', id: null, name: '' })} className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+          <button onClick={() => handleAction('delete', confirmModal.id)} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors shadow-sm">Delete</button>
+        </div>
+      </Modal>
     </div>
   )
 }
@@ -268,6 +375,7 @@ const NgosList = () => {
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
   const [confirmModal, setConfirmModal] = useState({ open: false, type: '', id: null, name: '' })
+  const [searchTerm, setSearchTerm] = useState('')
 
   const fetchNgos = async () => {
     try {
@@ -290,53 +398,83 @@ const NgosList = () => {
     } catch (error) { setToast({ type: 'error', message: `Failed to ${action} NGO` }) }
   }
 
+  const filteredNgos = ngos.filter(ngo =>
+    ngo.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    ngo.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    ngo.owner_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   if (loading) return <div className="flex justify-center p-12"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div></div>
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-slate-800 mb-2">NGOs ({ngos.length})</h1>
-      <p className="text-slate-500 mb-8">Manage partner organizations</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">NGOs ({filteredNgos.length})</h1>
+          <p className="text-slate-500">Manage partner organizations</p>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search NGOs..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 w-full md:w-64"
+          />
+        </div>
+      </div>
+
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-      <div className="space-y-4">
-        {ngos.map((ngo) => (
-          <div key={ngo.id} className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-xl bg-green-50 text-green-600 h-fit">
-                  <Handshake className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-slate-800 mb-1 flex items-center gap-2">
-                    {ngo.name}
-                    {ngo.is_verified && <CheckCircle2 className="w-4 h-4 text-blue-500" />}
-                  </h3>
-                  <div className="text-sm text-slate-500 space-y-1">
-                    <p>Owner: {ngo.owner_name}</p>
-                    <p>{ngo.email}</p>
-                    <p className="flex items-center gap-1 mt-2 text-xs text-slate-400"><Users className="w-3 h-3" /> {ngo.volunteer_count} Volunteers</p>
+      {filteredNgos.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 border-dashed">
+          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Handshake className="w-6 h-6 text-slate-400" />
+          </div>
+          <p className="text-slate-500 font-medium">No NGOs found matching "{searchTerm}"</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredNgos.map((ngo) => (
+            <div key={ngo.id} className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-green-50 text-green-600 h-fit">
+                    <Handshake className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-800 mb-1 flex items-center gap-2">
+                      {ngo.name}
+                      {ngo.is_verified && <CheckCircle2 className="w-4 h-4 text-blue-500" />}
+                    </h3>
+                    <div className="text-sm text-slate-500 space-y-1">
+                      <p>Owner: {ngo.owner_name}</p>
+                      <p>{ngo.email}</p>
+                      <p className="flex items-center gap-1 mt-2 text-xs text-slate-400"><Users className="w-3 h-3" /> {ngo.volunteer_count} Volunteers</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-3">
-                {ngo.status === 'suspended' ? (
-                  <button onClick={() => handleAction('activate', ngo.id)} className="px-4 py-2 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4" /> Activate
+                <div className="flex items-center gap-3">
+                  {ngo.status === 'suspended' ? (
+                    <button onClick={() => handleAction('activate', ngo.id)} className="px-4 py-2 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4" /> Activate
+                    </button>
+                  ) : (
+                    <button onClick={() => handleAction('suspend', ngo.id)} className="px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-sm font-medium hover:bg-amber-100 transition-colors flex items-center gap-2">
+                      <ShieldAlert className="w-4 h-4" /> Suspend
+                    </button>
+                  )}
+                  <button onClick={() => setConfirmModal({ open: true, type: 'ngo', id: ngo.id, name: ngo.name })} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
+                    <Trash2 className="w-4 h-4" /> Delete
                   </button>
-                ) : (
-                  <button onClick={() => handleAction('suspend', ngo.id)} className="px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-sm font-medium hover:bg-amber-100 transition-colors flex items-center gap-2">
-                    <ShieldAlert className="w-4 h-4" /> Suspend
-                  </button>
-                )}
-                <button onClick={() => setConfirmModal({ open: true, type: 'ngo', id: ngo.id, name: ngo.name })} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
-                  <Trash2 className="w-4 h-4" /> Delete
-                </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <Modal isOpen={confirmModal.open} onClose={() => setConfirmModal({ open: false, type: '', id: null, name: '' })} title="Confirm Delete">
         <p className="text-slate-600 mb-6">Are you sure you want to delete <span className="font-semibold text-slate-900">{confirmModal.name}</span>? This action cannot be undone.</p>
@@ -355,6 +493,7 @@ const BloodBanksList = () => {
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
   const [confirmModal, setConfirmModal] = useState({ open: false, type: '', id: null, name: '' })
+  const [searchTerm, setSearchTerm] = useState('')
 
   const fetchBloodBanks = async () => {
     try {
@@ -377,52 +516,83 @@ const BloodBanksList = () => {
     } catch (error) { setToast({ type: 'error', message: `Failed to ${action} Blood Bank` }) }
   }
 
+  const filteredBanks = bloodBanks.filter(bank =>
+    bank.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.contact_info?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    bank.city?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   if (loading) return <div className="flex justify-center p-12"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div></div>
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-slate-800 mb-2">Blood Banks ({bloodBanks.length})</h1>
-      <p className="text-slate-500 mb-8">Manage blood bank facilities</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Blood Banks ({filteredBanks.length})</h1>
+          <p className="text-slate-500">Manage blood bank facilities</p>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search blood banks..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 w-full md:w-64"
+          />
+        </div>
+      </div>
+
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-      <div className="space-y-4">
-        {bloodBanks.map((bank) => (
-          <div key={bank.id} className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-xl bg-purple-50 text-purple-600 h-fit">
-                  <Building2 className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-slate-800 mb-1 flex items-center gap-2">
-                    {bank.name}
-                    {bank.is_verified && <CheckCircle2 className="w-4 h-4 text-blue-500" />}
-                  </h3>
-                  <div className="text-sm text-slate-500 space-y-1">
-                    <p>{bank.contact_info}</p>
-                    <p>{bank.email}</p>
+      {filteredBanks.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 border-dashed">
+          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Building2 className="w-6 h-6 text-slate-400" />
+          </div>
+          <p className="text-slate-500 font-medium">No blood banks found matching "{searchTerm}"</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredBanks.map((bank) => (
+            <div key={bank.id} className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-md shadow-slate-200/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-purple-50 text-purple-600 h-fit">
+                    <Building2 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-800 mb-1 flex items-center gap-2">
+                      {bank.name}
+                      {bank.is_verified && <CheckCircle2 className="w-4 h-4 text-blue-500" />}
+                    </h3>
+                    <div className="text-sm text-slate-500 space-y-1">
+                      <p>{bank.contact_info}</p>
+                      <p>{bank.email}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-3">
-                {bank.status === 'suspended' ? (
-                  <button onClick={() => handleAction('activate', bank.id)} className="px-4 py-2 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4" /> Activate
+                <div className="flex items-center gap-3">
+                  {bank.status === 'suspended' ? (
+                    <button onClick={() => handleAction('activate', bank.id)} className="px-4 py-2 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4" /> Activate
+                    </button>
+                  ) : (
+                    <button onClick={() => handleAction('suspend', bank.id)} className="px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-sm font-medium hover:bg-amber-100 transition-colors flex items-center gap-2">
+                      <ShieldAlert className="w-4 h-4" /> Suspend
+                    </button>
+                  )}
+                  <button onClick={() => setConfirmModal({ open: true, type: 'blood_bank', id: bank.id, name: bank.name })} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
+                    <Trash2 className="w-4 h-4" /> Delete
                   </button>
-                ) : (
-                  <button onClick={() => handleAction('suspend', bank.id)} className="px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-sm font-medium hover:bg-amber-100 transition-colors flex items-center gap-2">
-                    <ShieldAlert className="w-4 h-4" /> Suspend
-                  </button>
-                )}
-                <button onClick={() => setConfirmModal({ open: true, type: 'blood_bank', id: bank.id, name: bank.name })} className="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
-                  <Trash2 className="w-4 h-4" /> Delete
-                </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <Modal isOpen={confirmModal.open} onClose={() => setConfirmModal({ open: false, type: '', id: null, name: '' })} title="Confirm Delete">
         <p className="text-slate-600 mb-6">Are you sure you want to delete <span className="font-semibold text-slate-900">{confirmModal.name}</span>? This action cannot be undone.</p>
@@ -452,7 +622,7 @@ const AdminRequestBlood = () => {
         setLoadingLocation(false)
         setToast({ type: 'success', message: 'Location captured' })
       },
-      (err) => { setLoadingLocation(false); setToast({ type: 'error', message: 'Failed to get location' }) },
+      (err) => { setLoadingLocation(false); setToast({ type: 'error', message: 'Allow site permission' }) },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     )
   }

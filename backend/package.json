@@ -1,7 +1,7 @@
 {
-  "name": "bloodlink-backend",
+  "name": "bharakt-backend",
   "version": "1.0.0",
-  "description": "BloodLink - Blood Donation Management System API",
+  "description": "Bharakt - Blood Donation Management System API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

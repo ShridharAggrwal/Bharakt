@@ -111,7 +111,7 @@ function Header() {
               <Droplets className="w-4 h-4 text-white" />
             </div>
             <span className={`text-lg font-semibold transition-colors duration-300 ${isScrolled ? "text-slate-900" : "text-white"}`}>
-              BloodLink
+              Bharakt
             </span>
           </motion.div>
 
@@ -141,16 +141,6 @@ function Header() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Button
-              variant="ghost"
-              onClick={handleRequestClick}
-              className={`rounded-full transition-all duration-300 px-5 h-10 text-sm font-medium ${isScrolled
-                ? "text-slate-700 hover:bg-slate-100"
-                : "text-white hover:bg-white/10"
-                }`}
-            >
-              Request Blood
-            </Button>
 
             {!user ? (
               <>
@@ -273,18 +263,18 @@ function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-[90vh] lg:min-h-screen overflow-hidden bg-slate-50">
+    <section className="relative min-h-[95vh] lg:min-h-screen overflow-hidden bg-slate-50">
       {/* Background Image Container */}
       <div className="absolute inset-0 z-0">
         <img
           src="https://www.livemint.com/lm-img/img/2025/02/20/optimize/INDIA-POLITICS-DELHI-14_1740045325725_1740045348415.jpg"
           alt="Healthcare professional"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-[center_15%]"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black/80" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-24 lg:pt-28 h-full flex items-center min-h-[90vh] lg:min-h-screen">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-20 lg:pt-24 h-full flex items-center min-h-[85vh] lg:min-h-[90vh]">
         <div className="grid lg:grid-cols-12 gap-12 items-center w-full py-12">
           <div className="lg:col-span-7">
             <motion.div
@@ -338,67 +328,75 @@ function HeroSection() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 flex flex-col gap-6">
+          <div className="lg:col-span-5 flex flex-col gap-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6 }}
-              className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl"
+              className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 lg:p-8 shadow-2xl"
             >
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
                     <Droplets className="w-5 h-5 text-white" />
                   </div>
-                  <span className="text-lg font-medium text-white">BloodLink</span>
+                  <span className="text-lg font-medium text-white">Bharakt</span>
                 </div>
                 <div className="px-3 py-1 bg-white/10 rounded-full text-[10px] font-medium text-white/60 uppercase tracking-widest">
                   Live Impact
                 </div>
               </div>
 
-              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
-                <HeartHandshake className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4">
+                <HeartHandshake className="w-6 h-6 text-white" />
               </div>
 
-              <h3 className="text-2xl font-semibold text-white mb-4 leading-tight">Make an Immediate Impact</h3>
-              <p className="text-white/70 text-base mb-8 leading-relaxed">
+              <h3 className="text-xl font-semibold text-white mb-3 leading-tight">Make an Immediate Impact</h3>
+              <p className="text-white/70 text-sm mb-6 leading-relaxed">
                 Your contribution provides essential aid to families in need with care and dignity.
               </p>
 
-              <Button
-                onClick={handleDonateClick}
-                className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full h-14 text-lg font-medium shadow-lg shadow-red-600/20"
-              >
-                Donate Now
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={handleDonateClick}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white rounded-full h-12 text-base font-medium shadow-lg shadow-red-600/20"
+                >
+                  Donate Now
+                </Button>
+                <Button
+                  onClick={() => user ? window.location.href = '/dashboard/request' : window.location.href = '/login'}
+                  className="w-full bg-transparent text-white hover:bg-white/10 rounded-full h-12 text-base font-medium transition-all"
+                >
+                  Request Blood
+                </Button>
+              </div>
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
-                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 text-center lg:text-left"
+                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 text-center lg:text-left"
               >
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4 mx-auto lg:mx-0">
-                  <Users className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-3 mx-auto lg:mx-0">
+                  <Users className="w-5 h-5 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-white mb-1">500+</div>
-                <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Active Volunteers</div>
+                <div className="text-2xl font-bold text-white mb-0.5">500+</div>
+                <div className="text-[10px] font-medium text-white/50 uppercase tracking-wider">Active Volunteers</div>
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 }}
-                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 text-center lg:text-left"
+                className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 text-center lg:text-left"
               >
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4 mx-auto lg:mx-0">
-                  <Heart className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-3 mx-auto lg:mx-0">
+                  <Heart className="w-5 h-5 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-white mb-1">50,000+</div>
-                <div className="text-xs font-medium text-white/50 uppercase tracking-wider">Lives Saved</div>
+                <div className="text-2xl font-bold text-white mb-0.5">50,000+</div>
+                <div className="text-[10px] font-medium text-white/50 uppercase tracking-wider">Lives Saved</div>
               </motion.div>
             </div>
           </div>
@@ -438,7 +436,7 @@ function FeaturesSection() {
             <div className="bg-white rounded-[1.5rem] overflow-hidden card-shadow h-full border border-slate-100">
               <div className="aspect-[4/3] relative">
                 <img
-                  src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/blood-donation.jpg"
+                  src="/images/blood-donation.jpg"
                   alt="Blood donation"
                   className="w-full h-full object-cover"
                 />
@@ -475,7 +473,7 @@ function FeaturesSection() {
               <div className="mt-auto">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden">
                   <img
-                    src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/medical-care.jpg"
+                    src="/images/medical-care.jpg"
                     alt="Medical care"
                     className="w-full h-full object-cover"
                   />
@@ -500,7 +498,7 @@ function FeaturesSection() {
 
             <div className="bg-slate-100 rounded-[1.5rem] overflow-hidden flex-1 relative">
               <img
-                src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/community.jpg"
+                src="/images/community.jpg"
                 alt="Community support"
                 className="w-full h-full object-cover"
               />
@@ -508,7 +506,7 @@ function FeaturesSection() {
                 <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <Droplets className="w-4 h-4 text-red-600" />
-                    <span className="text-xs font-medium text-slate-500">BloodLink</span>
+                    <span className="text-xs font-medium text-slate-500">Bharakt</span>
                   </div>
                 </div>
               </div>
@@ -555,19 +553,19 @@ function ImpactSection() {
                   icon: Heart,
                   title: "Support Life-Saving Healthcare",
                   description: "Provide medical checkups, essential medicines, and emergency treatments for families who cannot afford healthcare.",
-                  image: "https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/healthcare-1.jpg"
+                  image: "/images/healthcare-1.jpg"
                 },
                 {
                   icon: HeartHandshake,
                   title: "Compassion-Driven Support",
                   description: "Provide essential monthly food packs to families struggling with hunger. Your support ensures they receive nutritious meals and daily comfort.",
-                  image: "https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/compassion.jpg"
+                  image: "/images/compassion.jpg"
                 },
                 {
                   icon: Users,
                   title: "Give Children a Chance to Learn",
                   description: "Help underprivileged children access quality education through books, uniforms, and school supplies. Your contribution shapes their future.",
-                  image: "https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/education.jpg"
+                  image: "/images/education.jpg"
                 }
               ].map((item, index) => (
                 <motion.div
@@ -607,7 +605,7 @@ function ImpactSection() {
               <div className="bg-white rounded-2xl overflow-hidden card-shadow">
                 <div className="aspect-square">
                   <img
-                    src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/healthcare-support.jpg"
+                    src="/images/healthcare-support.jpg"
                     alt="Healthcare support"
                     className="w-full h-full object-cover"
                   />
@@ -698,12 +696,12 @@ function BloodTypesSection() {
               transition={{ delay: index * 0.05 }}
               className="group"
             >
-              <div className="bg-slate-50 rounded-2xl p-5 h-full hover:bg-white hover:shadow-lg transition-all duration-300 border border-slate-100 hover:border-slate-200">
+              <div className="bg-white rounded-2xl p-5 h-full border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 hover:border-red-100">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-all duration-300 shadow-md">
                     <span className="text-xl font-bold text-white">{blood.type}</span>
                   </div>
-                  <span className="text-xs font-medium text-slate-400">{blood.percentage}</span>
+                  <span className="text-xs font-medium text-slate-500">{blood.percentage}</span>
                 </div>
                 <div className="space-y-2">
                   <div>
@@ -747,8 +745,18 @@ function HowItWorksSection() {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <section id="how-it-works" className="py-20 relative overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://www.livemint.com/lm-img/img/2025/02/20/optimize/INDIA-POLITICS-DELHI-14_1740045325725_1740045348415.jpg"
+          alt="Background"
+          className="w-full h-full object-cover object-[center_15%]"
+        />
+        <div className="absolute inset-0 bg-white/90" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -766,7 +774,7 @@ function HowItWorksSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, index) => (
             <motion.div
               key={step.title}
@@ -787,8 +795,8 @@ function HowItWorksSection() {
                   <p className="text-slate-500 text-sm leading-relaxed">{step.description}</p>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                    <ChevronRight className="w-6 h-6 text-slate-300" />
+                  <div className="hidden md:flex absolute top-1/2 -right-6 transform -translate-y-1/2 z-20 w-8 h-8 bg-white rounded-full items-center justify-center shadow-md border border-slate-100">
+                    <ChevronRight className="w-4 h-4 text-red-500" />
                   </div>
                 )}
               </div>
@@ -842,7 +850,7 @@ function CTASection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="relative rounded-[2rem] overflow-hidden">
           <img
-            src="https://3000-1b4fc65b-02be-4695-b71e-125326d21d98.orchids.cloud/images/community.jpg"
+            src="/images/community.jpg"
             alt="Community support"
             className="w-full h-[500px] object-cover"
           />
@@ -923,8 +931,9 @@ function CommunitySection() {
                   Get Started
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
-                <Button variant="outline" className="border-slate-700 text-white hover:bg-white/5 rounded-full px-6 h-11 text-sm font-medium">
+                <Button className="bg-red-600 hover:bg-red-700 text-white rounded-full px-6 h-11 text-sm font-medium">
                   Learn More
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </div>
@@ -980,10 +989,10 @@ function Footer() {
               <div className="w-9 h-9 bg-red-600 rounded-full flex items-center justify-center">
                 <Droplets className="w-4 h-4 text-white" />
               </div>
-              <span className="text-lg font-semibold text-white">BloodLink</span>
+              <span className="text-lg font-semibold text-white">Bharakt</span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm mb-6">
-              BloodLink is dedicated to connecting blood donors with those in need,
+              Bharakt is dedicated to connecting blood donors with those in need,
               making life-saving blood accessible to everyone, everywhere.
             </p>
             <div className="flex gap-3">
@@ -1027,7 +1036,7 @@ function Footer() {
               </li>
               <li className="flex items-center gap-3 text-slate-400 text-sm">
                 <Mail className="w-4 h-4 text-red-500" />
-                <span>support@bloodlink.org</span>
+                <span>support@bharakt.org</span>
               </li>
               <li className="flex items-start gap-3 text-slate-400 text-sm">
                 <MapPin className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
@@ -1039,7 +1048,7 @@ function Footer() {
 
         <div className="border-t border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-500 text-xs">
-            © {new Date().getFullYear()} BloodLink. All rights reserved.
+            © {new Date().getFullYear()} Bharakt. All rights reserved.
           </p>
           <div className="flex gap-6">
             {legalLinks.map((link) => (

@@ -39,123 +39,183 @@ const Overview = () => {
   }, [])
 
   const getStockColor = (units) => {
-    if (units <= 10) return { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-500', label: 'Low', indicator: 'bg-red-500' }
-    if (units <= 25) return { bg: 'bg-orange-50', border: 'border-orange-100', text: 'text-orange-500', label: 'Medium', indicator: 'bg-orange-500' }
-    return { bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-500', label: 'Sufficient', indicator: 'bg-emerald-500' }
+    if (units <= 10) return { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-600', label: 'Low', indicator: 'bg-red-500' }
+    if (units <= 25) return { bg: 'bg-amber-50', border: 'border-amber-100', text: 'text-amber-600', label: 'Medium', indicator: 'bg-amber-500' }
+    return { bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-600', label: 'Good', indicator: 'bg-emerald-500' }
   }
 
   const statCards = [
-    { label: "Total Units", value: stats.totalUnits, icon: Droplets, gradient: "from-rose-500 to-red-600", bgLight: "bg-rose-50", textColor: "text-rose-600" },
-    { label: "Nearby Requests", value: stats.pendingRequests, icon: ClipboardList, gradient: "from-blue-500 to-blue-600", bgLight: "bg-blue-50", textColor: "text-blue-600" },
-    { label: "Active Alerts", value: alerts.length, icon: Megaphone, gradient: "from-amber-500 to-orange-600", bgLight: "bg-amber-50", textColor: "text-amber-600" },
+    { label: "Total Units", value: stats.totalUnits, icon: Droplets, color: "text-rose-600", bg: "bg-rose-50", link: "/blood-bank/stock" },
+    { label: "Nearby Requests", value: stats.pendingRequests, icon: ClipboardList, color: "text-blue-600", bg: "bg-blue-50", link: "/blood-bank/requests" },
+    { label: "Active Alerts", value: alerts.length, icon: Megaphone, color: "text-amber-600", bg: "bg-amber-50", link: "/blood-bank/requests" },
+    { label: "Critical Stock", value: stock.filter(s => s.units_available <= 10).length, icon: AlertTriangle, color: "text-red-600", bg: "bg-red-50", link: "/blood-bank/stock" },
   ]
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-6 max-w-7xl mx-auto h-[calc(100vh-6rem)] flex flex-col">
+      <div className="text-center shrink-0">
         <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">Blood Bank Dashboard</h1>
         <p className="text-slate-500">Manage your blood inventory and requests</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {statCards.map((stat, index) => (
-          <div
-            key={stat.label}
-            className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-500 hover:-translate-y-1"
-          >
-            <div className={cn("absolute top-0 left-0 right-0 h-1 bg-gradient-to-r", stat.gradient)} />
-            <div className="flex items-start justify-between mb-5">
-              <div className={cn("p-3.5 rounded-2xl bg-gradient-to-br shadow-lg", stat.gradient)}>
-                <stat.icon className="w-6 h-6 text-white" />
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 shrink-0">
+        {statCards.map((stat) => (
+          <Link to={stat.link} key={stat.label} className="block group">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 h-full flex flex-col justify-between group-hover:-translate-y-1">
+              <div className="flex items-start justify-between mb-4">
+                <div className={cn("p-3 rounded-xl transition-colors", stat.bg)}>
+                  <stat.icon className={cn("w-6 h-6", stat.color)} />
+                </div>
               </div>
-              <div className={cn("text-xs font-bold px-2.5 py-1 rounded-full", stat.bgLight, stat.textColor)}>
-                #{index + 1}
+              <div className="mt-auto">
+                <h3 className="text-3xl font-bold text-slate-900 mb-1">{stat.value}</h3>
+                <p className="text-sm text-slate-500 font-medium">{stat.label}</p>
               </div>
             </div>
-            <div className="space-y-1">
-              <h3 className="text-4xl font-bold text-slate-900 tracking-tight">{stat.value}</h3>
-              <p className="text-slate-600 font-semibold">{stat.label}</p>
-            </div>
-            <div className={cn("absolute -bottom-8 -right-8 w-24 h-24 rounded-full opacity-10 bg-gradient-to-br blur-2xl group-hover:opacity-20 transition-opacity", stat.gradient)} />
-          </div>
+          </Link>
         ))}
       </div>
 
-      <div className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <Droplets className="w-5 h-5 text-rose-500" />
-            Blood Stock Overview
-          </h2>
-          <div className="flex gap-4 text-xs">
-            <span className="flex items-center gap-1.5 text-slate-500"><span className="w-2 h-2 rounded-full bg-red-500"></span>Low</span>
-            <span className="flex items-center gap-1.5 text-slate-500"><span className="w-2 h-2 rounded-full bg-orange-500"></span>Medium</span>
-            <span className="flex items-center gap-1.5 text-slate-500"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>Sufficient</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          {stock.map((item) => {
-            const style = getStockColor(item.units_available)
-            return (
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                key={item.blood_group}
-                className={cn(`relative overflow-hidden p-4 rounded-xl border text-center group transition-all`, style.bg, style.border)}
-              >
-                <div className={cn(`absolute top-0 right-0 p-1.5 rounded-bl-lg opacity-20 group-hover:opacity-100 transition-opacity`, style.indicator)}></div>
-                <div className="text-2xl font-bold text-slate-800 mb-1">{item.blood_group}</div>
-                <div className={cn('text-xl font-bold mb-1', style.text)}>{item.units_available}</div>
-                <div className="text-xs text-slate-500">units</div>
-              </motion.div>
-            )
-          })}
-        </div>
-
-        {stock.some(s => s.units_available <= 10) && (
-          <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <h4 className="text-slate-800 font-medium text-sm">Critical Stock Levels</h4>
-              <p className="text-slate-500 text-sm mt-1">Some blood types are running low. Consider requesting donations immediately.</p>
+      {/* Bottom Section: Stock Overview & Quick Actions */}
+      <div className="grid lg:grid-cols-3 gap-6 grow min-h-0">
+        {/* Live Inventory (Col-span-2) */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between mb-6 shrink-0">
+            <h2 className="text-lg font-bold text-slate-900">Live Inventory</h2>
+            <div className="flex gap-3 text-xs font-medium">
+              <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-50 text-red-600 border border-red-100"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>Low</span>
+              <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-100"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Medium</span>
+              <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Good</span>
             </div>
           </div>
-        )}
-      </div>
 
-      {alerts.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-          <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
-            Recent Blood Requests
-          </h2>
-          <div className="space-y-4">
-            {alerts.slice(0, 3).map((alert) => (
-              <div key={alert.id} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center font-bold text-xl">
-                    {alert.blood_group}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-slate-900 font-medium">{alert.units_needed} units needed</span>
-                      <span className="text-xs bg-white text-slate-500 border border-slate-200 px-2 py-0.5 rounded-full">{alert.type}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <MapPin className="w-3 h-3" />
-                      {alert.address}
-                    </div>
-                  </div>
-                </div>
-                <Link to="/blood-bank/requests" className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm rounded-lg transition-colors font-medium">
-                  View
-                </Link>
-              </div>
-            ))}
+          <div className="grid grid-cols-4 gap-4 overflow-y-auto pr-2 custom-scrollbar grow content-start">
+            {stock.map((item) => {
+              const style = getStockColor(item.units_available)
+              return (
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  key={item.blood_group}
+                  className={cn(`relative p-4 rounded-xl border text-center transition-all`, style.bg, style.border)}
+                >
+                  <div className="text-xl font-bold text-slate-800 mb-1">{item.blood_group}</div>
+                  <div className={cn('text-2xl font-bold mb-1', style.text)}>{item.units_available}</div>
+                  <div className="text-xs text-slate-500 font-medium">units</div>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
-      )}
+
+        {/* Quick Actions (Col-span-1) */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col">
+          <h2 className="text-lg font-bold text-slate-900 mb-4 shrink-0">Quick Actions</h2>
+          <div className="space-y-4 grow flex flex-col justify-center">
+
+            <Link to="/blood-bank/stock" className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-rose-50 hover:border-rose-100 transition-all group">
+              <div className="p-3 bg-white text-rose-600 rounded-lg shadow-sm group-hover:scale-110 transition-transform">
+                <Droplets className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-slate-900 block">Update Stock</span>
+                <span className="text-xs text-slate-500">Manage Inventory</span>
+              </div>
+            </Link>
+
+            <Link to="/blood-bank/requests" className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-blue-50 hover:border-blue-100 transition-all group">
+              <div className="p-3 bg-white text-blue-600 rounded-lg shadow-sm group-hover:scale-110 transition-transform">
+                <ClipboardList className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-slate-900 block">View Requests</span>
+                <span className="text-xs text-slate-500">{stats.pendingRequests} Active</span>
+              </div>
+            </Link>
+
+            <Link to="/blood-bank/request-blood" className="flex items-center gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-amber-50 hover:border-amber-100 transition-all group">
+              <div className="p-3 bg-white text-amber-600 rounded-lg shadow-sm group-hover:scale-110 transition-transform">
+                <Megaphone className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-slate-900 block">Broadcast Alert</span>
+                <span className="text-xs text-slate-500">Request Donations</span>
+              </div>
+            </Link>
+
+          </div>
+        </div>
+      </div>
     </div>
+  )
+}
+
+// Single Blood Stock Card Component
+const BloodStockCard = ({ item, onUpdate }) => {
+  const [units, setUnits] = useState(item.units_available)
+  const [loading, setLoading] = useState(false)
+
+  // Update local state when prop changes (e.g., after refetch)
+  useEffect(() => { setUnits(item.units_available) }, [item.units_available])
+
+  const getStockColor = (u) => {
+    const val = u === '' ? 0 : u
+    if (val <= 10) return { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-500', ring: 'focus:ring-red-500/20', inputBorder: 'focus:border-red-500' }
+    if (val <= 25) return { bg: 'bg-orange-50', border: 'border-orange-100', text: 'text-orange-500', ring: 'focus:ring-orange-500/20', inputBorder: 'focus:border-orange-500' }
+    return { bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-500', ring: 'focus:ring-emerald-500/20', inputBorder: 'focus:border-emerald-500' }
+  }
+
+  const handleSave = async () => {
+    if (units === '' || units < 0) return
+    setLoading(true)
+    await onUpdate(item.blood_group, units)
+    setLoading(false)
+  }
+
+  const style = getStockColor(units)
+
+  return (
+    <motion.div
+      layout
+      className={cn(`relative p-6 rounded-2xl border transition-all duration-300`, style.bg, style.border)}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-3xl font-bold text-slate-800">{item.blood_group}</span>
+        <div className="p-2 rounded-lg bg-white/50">
+          <Droplets className={cn("w-5 h-5", style.text)} />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Available Units</label>
+          <input
+            type="number"
+            min="0"
+            value={units}
+            onChange={(e) => setUnits(e.target.value === '' ? '' : parseInt(e.target.value))}
+            className={cn(
+              "w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-2xl font-bold text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-4 transition-all",
+              style.ring,
+              style.inputBorder
+            )}
+          />
+        </div>
+
+        <button
+          onClick={handleSave}
+          disabled={loading || units === '' || units === item.units_available}
+          className={cn(
+            "w-full py-2.5 rounded-xl font-medium transition-all shadow-sm flex items-center justify-center gap-2",
+            units === item.units_available
+              ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+              : "bg-slate-900 text-white hover:bg-black hover:shadow-md active:scale-95"
+          )}
+        >
+          {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Update Stock"}
+        </button>
+      </div>
+    </motion.div>
   )
 }
 
@@ -164,23 +224,14 @@ const BloodStock = () => {
   const [stock, setStock] = useState([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
-  const [editingGroup, setEditingGroup] = useState(null)
-  const [newUnits, setNewUnits] = useState(0)
-
-  const getStockColor = (units) => {
-    if (units <= 10) return { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-500' }
-    if (units <= 25) return { bg: 'bg-orange-50', border: 'border-orange-100', text: 'text-orange-500' }
-    return { bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-500' }
-  }
 
   const fetchStock = async () => { try { const response = await api.get('/blood-bank/stock'); setStock(response.data) } catch (error) { console.log('Failed to fetch stock') } finally { setLoading(false) } }
   useEffect(() => { fetchStock() }, [])
 
-  const handleUpdate = async (bloodGroup) => {
+  const handleUpdate = async (bloodGroup, newUnits) => {
     try {
       await api.put('/blood-bank/stock', { blood_group: bloodGroup, units_available: newUnits })
-      setToast({ type: 'success', message: 'Stock updated successfully' })
-      setEditingGroup(null)
+      setToast({ type: 'success', message: `${bloodGroup} stock updated to ${newUnits} units` })
       fetchStock()
     } catch (error) { setToast({ type: 'error', message: 'Failed to update stock' }) }
   }
@@ -197,58 +248,9 @@ const BloodStock = () => {
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stock.map((item) => {
-          const style = getStockColor(item.units_available)
-          const isEditing = editingGroup === item.blood_group
-
-          return (
-            <motion.div
-              layout
-              key={item.blood_group}
-              className={cn(`relative overflow-hidden p-6 rounded-2xl border transition-all duration-300`, style.bg, style.border)}
-            >
-              {isEditing ? (
-                <div className="space-y-4 animate-in fade-in zoom-in duration-200">
-                  <div className="flex items-center justify-between">
-                    <span className="text-3xl font-bold text-slate-800">{item.blood_group}</span>
-                    <button onClick={() => setEditingGroup(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
-                      <XCircle className="w-6 h-6" />
-                    </button>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wider">Units Available</label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={newUnits}
-                      onChange={(e) => setNewUnits(parseInt(e.target.value) || 0)}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-medium"
-                      autoFocus
-                    />
-                  </div>
-                  <button onClick={() => handleUpdate(item.blood_group)} className="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-medium transition-colors shadow-sm">
-                    Save Changes
-                  </button>
-                </div>
-              ) : (
-                <div
-                  onClick={() => { setEditingGroup(item.blood_group); setNewUnits(item.units_available) }}
-                  className="cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-3xl font-bold text-slate-800">{item.blood_group}</span>
-                    <div className="p-2 rounded-lg bg-white opacity-0 group-hover:opacity-100 transition-opacity">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                    </div>
-                  </div>
-                  <div className={cn(`text-4xl font-bold mb-2`, style.text)}>{item.units_available}</div>
-                  <div className="text-sm text-slate-500">units available</div>
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-rose-500/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                </div>
-              )}
-            </motion.div>
-          )
-        })}
+        {stock.map((item) => (
+          <BloodStockCard key={item.blood_group} item={item} onUpdate={handleUpdate} />
+        ))}
       </div>
     </div>
   )

@@ -106,7 +106,7 @@ const Register = () => {
         <img
           src="https://www.livemint.com/lm-img/img/2025/02/20/optimize/INDIA-POLITICS-DELHI-14_1740045325725_1740045348415.jpg"
           alt="Background"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-[center_15%]"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50/85 via-white/80 to-slate-50/85" />
         <div className="absolute inset-0 backdrop-blur-[1px]" />
@@ -138,7 +138,7 @@ const Register = () => {
             <div className="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-red-600/30">
               <Droplets className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-serif text-slate-900 mb-2">Join BloodLink</h1>
+            <h1 className="text-3xl font-serif text-slate-900 mb-2">Join Bharakt</h1>
             <p className="text-slate-500 text-sm">Create an account to save lives</p>
           </div>
 

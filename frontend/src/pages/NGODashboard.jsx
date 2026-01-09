@@ -49,104 +49,113 @@ const Overview = () => {
   }, [])
 
   const statCards = [
-    { label: "Active Campaigns", value: stats.activeCampaigns, icon: Calendar, gradient: "from-emerald-500 to-green-600", bgLight: "bg-emerald-50", textColor: "text-emerald-600", desc: "Ongoing Events" },
-    { label: "Total Campaigns", value: stats.campaignsCount, icon: Target, gradient: "from-rose-500 to-red-600", bgLight: "bg-rose-50", textColor: "text-rose-600", desc: "Events Created" },
-    { label: "Requests Fulfilled", value: stats.bloodRequestsAccepted, icon: Heart, gradient: "from-purple-500 to-purple-600", bgLight: "bg-purple-50", textColor: "text-purple-600", desc: "Lives Saved" },
-    { label: "Active Alerts", value: alerts.length, icon: Bell, gradient: "from-sky-500 to-blue-600", bgLight: "bg-sky-50", textColor: "text-sky-600", desc: "Nearby Requests" },
+    { label: "Active Campaigns", value: stats.activeCampaigns, icon: Calendar, color: "text-emerald-600", bg: "bg-emerald-50", link: "/ngo/campaigns" },
+    { label: "Total Campaigns", value: stats.campaignsCount, icon: Target, color: "text-rose-600", bg: "bg-rose-50", link: "/ngo/campaigns" },
+    { label: "Requests Fulfilled", value: stats.bloodRequestsAccepted, icon: Heart, color: "text-purple-600", bg: "bg-purple-50", link: "/ngo/alerts" },
+    { label: "Active Alerts", value: alerts.length, icon: Bell, color: "text-sky-600", bg: "bg-sky-50", link: "/ngo/alerts" },
   ]
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-6 max-w-7xl mx-auto h-[calc(100vh-6rem)] flex flex-col">
+      <div className="text-center shrink-0">
         <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">NGO Dashboard</h1>
         <p className="text-slate-500">Manage your campaigns and help save lives</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat, index) => (
-          <div
-            key={stat.label}
-            className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-500 hover:-translate-y-1"
-          >
-            <div className={cn("absolute top-0 left-0 right-0 h-1 bg-gradient-to-r", stat.gradient)} />
-            <div className="flex items-start justify-between mb-5">
-              <div className={cn("p-3.5 rounded-2xl bg-gradient-to-br shadow-lg", stat.gradient)}>
-                <stat.icon className="w-6 h-6 text-white" />
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 shrink-0">
+        {statCards.map((stat) => (
+          <Link to={stat.link} key={stat.label} className="block group">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 h-full flex flex-col justify-between group-hover:-translate-y-1">
+              <div className="flex items-start justify-between mb-4">
+                <div className={cn("p-3 rounded-xl transition-colors", stat.bg)}>
+                  <stat.icon className={cn("w-6 h-6", stat.color)} />
+                </div>
               </div>
-              <div className={cn("text-xs font-bold px-2.5 py-1 rounded-full", stat.bgLight, stat.textColor)}>
-                #{index + 1}
+              <div className="mt-auto">
+                <h3 className="text-3xl font-bold text-slate-900 mb-1">{stat.value}</h3>
+                <p className="text-sm text-slate-500 font-medium">{stat.label}</p>
               </div>
             </div>
-            <div className="space-y-1">
-              <h3 className="text-4xl font-bold text-slate-900 tracking-tight">{stat.value}</h3>
-              <p className="text-slate-600 font-semibold">{stat.label}</p>
-              <p className={cn("text-xs font-medium pt-2 flex items-center gap-1.5", stat.textColor)}>
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
-                {stat.desc}
-              </p>
-            </div>
-            <div className={cn("absolute -bottom-8 -right-8 w-24 h-24 rounded-full opacity-10 bg-gradient-to-br blur-2xl group-hover:opacity-20 transition-opacity", stat.gradient)} />
-          </div>
+          </Link>
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Link to="/ngo/create-campaign" className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-rose-500 to-red-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-rose-200 group-hover:scale-110 transition-transform">
-              <Plus className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-lg group-hover:text-rose-600 transition-colors">Create Campaign</h3>
-              <p className="text-slate-500 text-sm mt-1">Start a new blood donation campaign</p>
-            </div>
-          </div>
-        </Link>
-
-        <Link to="/ngo/campaigns" className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-sky-200 group-hover:scale-110 transition-transform">
-              <Calendar className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-lg group-hover:text-sky-600 transition-colors">View Campaigns</h3>
-              <p className="text-slate-500 text-sm mt-1">Manage your existing campaigns</p>
-            </div>
-          </div>
-        </Link>
-      </div>
-
-      {alerts.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50">
-          <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-            <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
-            Recent Blood Requests
-          </h2>
-          <div className="space-y-4">
-            {alerts.slice(0, 3).map((alert) => (
-              <div key={alert.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-slate-50 to-white border border-slate-100 hover:shadow-md transition-all duration-300">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-rose-200">
-                    {alert.blood_group}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-slate-900 font-medium">{alert.units_needed} units needed</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {alert.address}
-                    </div>
-                  </div>
+      {/* Bottom Section: Quick Actions & Campaign Status */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Quick Actions */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex flex-col justify-center">
+          <h2 className="text-sm font-bold text-slate-900 mb-6 uppercase tracking-wider">Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 grow">
+            <Link to="/ngo/create-campaign" className="group">
+              <div className="border border-slate-100 bg-slate-50/50 rounded-xl p-8 hover:border-red-200 hover:bg-red-50/30 transition-all flex items-center gap-5 h-full">
+                <div className="p-4 bg-white text-red-600 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <Plus className="w-8 h-8" />
                 </div>
-                <Link to="/ngo/alerts" className="px-4 py-2 bg-gradient-to-r from-rose-500 to-red-600 text-white hover:from-rose-600 hover:to-red-700 rounded-lg transition-colors text-sm font-medium shadow-lg shadow-rose-200">
-                  View Details
-                </Link>
+                <div className="text-left">
+                  <span className="font-bold text-slate-800 text-sm block mb-0.5">Create Campaign</span>
+                  <span className="text-xs text-slate-500 font-medium">New Drive</span>
+                </div>
               </div>
-            ))}
+            </Link>
+            <Link to="/ngo/campaigns" className="group">
+              <div className="border border-slate-100 bg-slate-50/50 rounded-xl p-8 hover:border-blue-200 hover:bg-blue-50/30 transition-all flex items-center gap-5 h-full">
+                <div className="p-4 bg-white text-blue-600 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <Calendar className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <span className="font-bold text-slate-800 text-sm block mb-0.5">View Campaigns</span>
+                  <span className="text-xs text-slate-500 font-medium">Manage Events</span>
+                </div>
+              </div>
+            </Link>
+            <Link to="/ngo/alerts" className="group">
+              <div className="border border-slate-100 bg-slate-50/50 rounded-xl p-8 hover:border-amber-200 hover:bg-amber-50/30 transition-all flex items-center gap-5 h-full">
+                <div className="p-4 bg-white text-amber-600 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <Bell className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <span className="font-bold text-slate-800 text-sm block mb-0.5">Blood Requests</span>
+                  <span className="text-xs text-slate-500 font-medium">Urgent Alerts</span>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
-      )}
+
+        {/* Campaign Health/Status */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col">
+          <h2 className="text-lg font-bold text-slate-900 mb-4 shrink-0">Campaign Health</h2>
+          <div className="space-y-4 grow flex flex-col justify-center">
+
+            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl border border-emerald-100 mb-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-sm font-bold text-emerald-800">Active & Tracking</span>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Active vs Total</span>
+                <span className="text-slate-900 font-bold text-xs">{stats.activeCampaigns} / {stats.campaignsCount}</span>
+              </div>
+              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex">
+                <div style={{ width: `${stats.campaignsCount > 0 ? (stats.activeCampaigns / stats.campaignsCount) * 100 : 0}%` }} className="h-full bg-emerald-500" />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Requests Fulfilled</span>
+                <span className="text-slate-900 font-bold text-xs">{stats.bloodRequestsAccepted}</span>
+              </div>
+              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div className="h-full bg-purple-500 w-[60%]" />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -156,12 +165,23 @@ const Campaigns = () => {
   const [campaigns, setCampaigns] = useState([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
-  const [endModal, setEndModal] = useState({ open: false, campaign: null, bloodUnits: '' })
+  const [endModal, setEndModal] = useState({ open: false, campaign: null, bloodUnits: '', type: 'manual' }) // type: 'manual' or 'expired'
 
   const fetchCampaigns = async () => {
     try {
       const response = await api.get('/ngo/campaigns')
-      setCampaigns(response.data)
+      const fetchedCampaigns = response.data
+      setCampaigns(fetchedCampaigns)
+
+      // Check for expired active campaigns
+      const expired = fetchedCampaigns.find(c =>
+        new Date(c.end_date) < new Date() && c.status === 'active'
+      )
+
+      if (expired) {
+        setEndModal({ open: true, campaign: expired, bloodUnits: '', type: 'expired', extensionDays: 7 })
+      }
+
     } catch (error) {
       console.log('Failed to fetch campaigns')
     } finally {
@@ -182,10 +202,30 @@ const Campaigns = () => {
         blood_units_collected: parseInt(endModal.bloodUnits)
       })
       setToast({ type: 'success', message: `Campaign ended! ${endModal.bloodUnits} units collected.` })
-      setEndModal({ open: false, campaign: null, bloodUnits: '' })
+      setEndModal({ open: false, campaign: null, bloodUnits: '', type: 'manual', extensionDays: 7 })
       fetchCampaigns()
     } catch (error) {
       setToast({ type: 'error', message: error.response?.data?.error || 'Failed to end campaign' })
+    }
+  }
+
+  const handleExtendCampaign = async () => {
+    const days = parseInt(endModal.extensionDays) || 7
+
+    try {
+      const newEndDate = new Date()
+      newEndDate.setDate(newEndDate.getDate() + days)
+
+      await api.put(`/ngo/campaigns/${endModal.campaign.id}`, {
+        ...endModal.campaign,
+        end_date: newEndDate.toISOString()
+      })
+
+      setToast({ type: 'success', message: `Campaign extended by ${days} days` })
+      setEndModal({ open: false, campaign: null, bloodUnits: '', type: 'manual', extensionDays: 7 })
+      fetchCampaigns()
+    } catch (error) {
+      setToast({ type: 'error', message: 'Failed to extend campaign' })
     }
   }
 
@@ -267,38 +307,89 @@ const Campaigns = () => {
         </div>
       )}
 
-      {/* End Campaign Modal */}
+      {/* End/Expired Campaign Modal */}
       {endModal.open && (
-        <Modal isOpen={endModal.open} onClose={() => setEndModal({ open: false, campaign: null, bloodUnits: '' })} title="End Campaign">
-          <h2 className="text-lg font-medium text-slate-800 mb-2">End Campaign: {endModal.campaign?.title}</h2>
-          <p className="text-slate-500 mb-6 text-sm">Please enter the total blood units collected during this campaign.</p>
+        <Modal
+          isOpen={endModal.open}
+          onClose={() => setEndModal({ open: false, campaign: null, bloodUnits: '', type: 'manual' })}
+          title={endModal.type === 'expired' ? "Campaign Expired" : "End Campaign"}
+        >
+          {endModal.type === 'expired' && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-amber-800">Deadline Passed</p>
+                <p className="text-xs text-amber-600">This campaign's end date has passed. Please choose to end it or extend the duration.</p>
+              </div>
+            </div>
+          )}
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-700 mb-2">Blood Units Collected</label>
-            <input
-              type="number"
-              min="0"
-              value={endModal.bloodUnits}
-              onChange={(e) => setEndModal({ ...endModal, bloodUnits: e.target.value })}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
-              placeholder="0"
-              autoFocus
-            />
-          </div>
+          <h2 className="text-lg font-medium text-slate-800 mb-2">
+            {endModal.type === 'expired' ? `Manage: ${endModal.campaign?.title}` : `End Campaign: ${endModal.campaign?.title}`}
+          </h2>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => setEndModal({ open: false, campaign: null, bloodUnits: '' })}
-              className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 font-medium transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleEndCampaign}
-              className="flex-1 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-medium transition-colors shadow-sm"
-            >
-              End Campaign
-            </button>
+          <div className="space-y-6">
+            {/* End Strategy */}
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <h3 className="text-sm font-bold text-slate-700 mb-3">Option 1: End Campaign</h3>
+              <p className="text-xs text-slate-500 mb-3">Finalize the campaign and record donations.</p>
+              <div className="mb-3">
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5 Uppercase">Blood Units Collected</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={endModal.bloodUnits}
+                  onChange={(e) => setEndModal({ ...endModal, bloodUnits: e.target.value })}
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-sm"
+                  placeholder="Enter units..."
+                />
+              </div>
+              <button
+                onClick={handleEndCampaign}
+                className="w-full px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-medium transition-colors shadow-sm text-sm"
+              >
+                Confirm & End Campaign
+              </button>
+            </div>
+
+            {/* Extend Strategy - Only for expired/active */}
+            {endModal.type === 'expired' && (
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-slate-200"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="px-2 bg-white text-xs text-slate-400 font-medium">OR</span>
+                </div>
+              </div>
+            )}
+
+            {endModal.type === 'expired' && (
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <h3 className="text-sm font-bold text-blue-800 mb-1">Option 2: Extend Campaign</h3>
+                <p className="text-xs text-blue-600 mb-3">Extend the deadline to continue receiving donors.</p>
+
+                <div className="flex gap-4 mb-3">
+                  <div className="flex-1">
+                    <label className="block text-xs font-semibold text-blue-700 mb-1.5">Extend By (Days)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={endModal.extensionDays || 7}
+                      onChange={(e) => setEndModal({ ...endModal, extensionDays: e.target.value })}
+                      className="w-full bg-white border border-blue-200 rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleExtendCampaign}
+                  className="w-full px-4 py-2 bg-white border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 font-medium transition-colors shadow-sm text-sm"
+                >
+                  Extend by {endModal.extensionDays || 7} Days
+                </button>
+              </div>
+            )}
           </div>
         </Modal>
       )}
@@ -351,6 +442,13 @@ const CreateCampaign = () => {
     )
   }
 
+  // Mock Blood Banks for selection (since we might not have a public API for this yet)
+  const [bloodBanks, setBloodBanks] = useState([
+    { id: 1, name: 'Red Cross Central Bank', email: 'contact@redcross.org' },
+    { id: 2, name: 'City Civil Hospital Bank', email: 'bloodbank@civilhospital.com' },
+    { id: 3, name: 'LifeSaver Foundation', email: 'support@lifesaver.org' }
+  ])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -361,9 +459,23 @@ const CreateCampaign = () => {
 
     setLoading(true)
     try {
+      // 1. Create Campaign
       await api.post('/ngo/campaigns', formData)
-      setToast({ type: 'success', message: 'Campaign created successfully!' })
-      setTimeout(() => navigate('/ngo/campaigns'), 1500)
+
+      // 2. Mock Email Notification if Blood Bank Selected
+      if (formData.blood_bank_id) {
+        const bank = bloodBanks.find(b => b.id.toString() === formData.blood_bank_id)
+        if (bank) {
+          console.log(`[MOCK EMAIL] To: ${bank.email} | Subject: Approval Request for Campaign "${formData.title}"`)
+          setToast({ type: 'success', message: `Campaign created! Approval request sent to ${bank.name}.` })
+        } else {
+          setToast({ type: 'success', message: 'Campaign created successfully!' })
+        }
+      } else {
+        setToast({ type: 'success', message: 'Campaign created successfully!' })
+      }
+
+      setTimeout(() => navigate('/ngo/campaigns'), 2000)
     } catch (error) {
       setToast({ type: 'error', message: 'Failed to create campaign' })
     } finally {
@@ -385,6 +497,28 @@ const CreateCampaign = () => {
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Campaign Title</label>
             <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all font-medium" placeholder="e.g., Blood Donation Drive 2024" required />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Collaborating Blood Bank (Optional)</label>
+            <div className="relative">
+              <select
+                value={formData.blood_bank_id || ''}
+                onChange={(e) => setFormData({ ...formData, blood_bank_id: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all font-medium appearance-none"
+              >
+                <option value="">Select a Blood Bank for Approval...</option>
+                {bloodBanks.map(bank => (
+                  <option key={bank.id} value={bank.id}>{bank.name}</option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                <Building2 className="w-5 h-5" />
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-slate-500">
+              Selecting a blood bank will send an automatic email request for their approval and collaboration.
+            </p>
           </div>
 
           <div>

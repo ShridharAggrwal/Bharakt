@@ -47,136 +47,102 @@ const Overview = () => {
   }, [])
 
   const statCards = [
-    { label: "Donations Made", value: stats.donations, icon: Droplets, gradient: "from-rose-500 to-red-600", bgLight: "bg-rose-50", textColor: "text-rose-600", desc: "Lives Saved ❤️" },
-    { label: "Blood Requests", value: stats.requests, icon: ClipboardList, gradient: "from-blue-500 to-blue-600", bgLight: "bg-blue-50", textColor: "text-blue-600", desc: "Active Requests" },
-    { label: "Active Alerts", value: alerts.length, icon: Bell, gradient: "from-amber-500 to-orange-600", bgLight: "bg-amber-50", textColor: "text-amber-600", desc: "Nearby Requests" },
+    { label: "Donations Made", value: stats.donations, icon: Droplets, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", link: "/dashboard/history" },
+    { label: "Blood Requests", value: stats.requests, icon: ClipboardList, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100", link: "/dashboard/history" },
+    { label: "Active Alerts", value: alerts.length, icon: Bell, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100", link: "/dashboard/alerts" },
+    { label: "Lives Impacted", value: stats.donations * 3, icon: Heart, color: "text-red-600", bg: "bg-red-50", border: "border-red-100", link: "/dashboard/history" },
   ]
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-6 max-w-7xl mx-auto h-[calc(100vh-6rem)] flex flex-col">
+      <div className="text-center shrink-0">
         <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">Dashboard Overview</h1>
         <p className="text-slate-500">Track your blood donation journey</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {statCards.map((stat, index) => (
-          <div
-            key={stat.label}
-            className="group relative overflow-hidden bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/50 transition-all duration-500 hover:-translate-y-1"
-          >
-            {/* Gradient accent bar */}
-            <div className={cn("absolute top-0 left-0 right-0 h-1 bg-gradient-to-r", stat.gradient)} />
-
-            {/* Icon with gradient background */}
-            <div className="flex items-start justify-between mb-5">
-              <div className={cn("p-3.5 rounded-2xl bg-gradient-to-br shadow-lg", stat.gradient)}>
-                <stat.icon className="w-6 h-6 text-white" />
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 shrink-0">
+        {statCards.map((stat) => (
+          <Link to={stat.link} key={stat.label} className="block group">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 h-full flex flex-col justify-between group-hover:-translate-y-1">
+              <div className="flex items-start justify-between mb-4">
+                <div className={cn("p-3 rounded-xl transition-colors", stat.bg)}>
+                  <stat.icon className={cn("w-6 h-6", stat.color)} />
+                </div>
               </div>
-              <div className={cn("text-xs font-bold px-2.5 py-1 rounded-full", stat.bgLight, stat.textColor)}>
-                #{index + 1}
+              <div className="mt-auto">
+                <h3 className="text-3xl font-bold text-slate-900 mb-1">{stat.value}</h3>
+                <p className="text-sm text-slate-500 font-medium">{stat.label}</p>
               </div>
             </div>
-
-            {/* Stats content */}
-            <div className="space-y-1">
-              <h3 className="text-4xl font-bold text-slate-900 tracking-tight">{stat.value}</h3>
-              <p className="text-slate-600 font-semibold">{stat.label}</p>
-              <p className={cn("text-xs font-medium pt-2 flex items-center gap-1.5", stat.textColor)}>
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
-                {stat.desc}
-              </p>
-            </div>
-
-            {/* Decorative gradient blob */}
-            <div className={cn("absolute -bottom-8 -right-8 w-24 h-24 rounded-full opacity-10 bg-gradient-to-br blur-2xl group-hover:opacity-20 transition-opacity", stat.gradient)} />
-          </div>
+          </Link>
         ))}
       </div>
 
-      <div className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50">
-        <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-          <User className="w-5 h-5 text-slate-400" /> Your Profile
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-100">
-            <span className="text-slate-500 text-sm">Blood Group</span>
-            <div className="text-2xl font-bold text-rose-600 mt-1">{user?.blood_group || 'Not set'}</div>
+      {/* Bottom Section: Quick Actions & Profile Status */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Quick Actions */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex flex-col justify-center">
+          <h2 className="text-sm font-bold text-slate-900 mb-6 uppercase tracking-wider">Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 grow">
+            <Link to="/dashboard/donate" className="group">
+              <div className="border border-slate-100 bg-slate-50/50 rounded-xl p-8 hover:border-rose-200 hover:bg-rose-50/30 transition-all flex items-center gap-5 h-full">
+                <div className="p-4 bg-white text-rose-600 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <Droplets className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <span className="font-bold text-slate-800 text-sm block mb-0.5">Donate Blood</span>
+                  <span className="text-xs text-slate-500 font-medium">Register Donation</span>
+                </div>
+              </div>
+            </Link>
+            <Link to="/dashboard/nearby" className="group">
+              <div className="border border-slate-100 bg-slate-50/50 rounded-xl p-8 hover:border-blue-200 hover:bg-blue-50/30 transition-all flex items-center gap-5 h-full">
+                <div className="p-4 bg-white text-blue-600 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <MapPin className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <span className="font-bold text-slate-800 text-sm block mb-0.5">Find Nearby</span>
+                  <span className="text-xs text-slate-500 font-medium">Banks & Drives</span>
+                </div>
+              </div>
+            </Link>
           </div>
-          <div className="p-4 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-100">
-            <span className="text-slate-500 text-sm">Email</span>
-            <div className="text-slate-900 font-medium mt-1 truncate">{user?.email}</div>
+        </div>
+
+        {/* Profile/Health Status */}
+        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex flex-col justify-center">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">My Health Pulse</h2>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-rose-50 rounded-full border border-rose-100">
+              <User className="w-4 h-4 text-rose-600" />
+              <span className="text-xs font-bold text-rose-700">Active</span>
+            </div>
           </div>
-          {user?.latitude && user?.longitude && (
-            <div className="col-span-1 md:col-span-2 p-4 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-100">
-              <span className="text-slate-500 text-sm flex items-center gap-2">
-                <MapPin className="w-4 h-4" /> Location Coordinates
-              </span>
-              <div className="text-slate-900 font-mono text-sm mt-1">
-                {parseFloat(user.latitude).toFixed(4)}, {parseFloat(user.longitude).toFixed(4)}
+
+          <div className="flex flex-col gap-8">
+            <div className="space-y-3">
+              <div className="flex justify-between text-xs font-bold uppercase text-slate-500 tracking-wider">
+                <span>Blood Group</span>
+                <span className="text-slate-900">{user?.blood_group || 'N/A'}</span>
+              </div>
+              <div className="w-full bg-slate-100 h-3 overflow-hidden rounded-full">
+                <div className="h-full bg-rose-500 w-full" />
               </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Quick Actions */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-8 shadow-lg shadow-slate-200/50">
-          <h2 className="text-xl font-bold text-slate-900 mb-4">Quick Actions</h2>
-          <p className="text-slate-500 mb-6">Make a difference today - donate blood or help someone in need.</p>
-          <div className="grid grid-cols-2 gap-4">
-            <Link to="/dashboard/donate" className="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border border-slate-100 hover:shadow-md transition-all group">
-              <Droplets className="w-6 h-6 text-rose-500 mb-2 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-semibold text-slate-900">Donate Blood</p>
-              <p className="text-xs text-slate-500">Register a donation</p>
-            </Link>
-            <Link to="/dashboard/nearby" className="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border border-slate-100 hover:shadow-md transition-all group">
-              <MapPin className="w-6 h-6 text-blue-500 mb-2 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-semibold text-slate-900">Find Nearby</p>
-              <p className="text-xs text-slate-500">Blood banks & NGOs</p>
-            </Link>
-          </div>
-        </div>
-
-        <Link to="/dashboard/request" className="bg-gradient-to-br from-red-500 to-rose-600 rounded-[1.5rem] p-8 text-white shadow-xl shadow-red-200/50 hover:shadow-2xl hover:shadow-red-300/50 transition-all group">
-          <Syringe className="w-10 h-10 mb-4 group-hover:scale-110 transition-transform" />
-          <h2 className="text-xl font-bold mb-2">Request Blood</h2>
-          <p className="text-white/80 text-sm">Create an urgent request to notify nearby donors</p>
-        </Link>
-      </div>
-
-      {alerts.length > 0 && (
-        <div className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-6 shadow-lg shadow-slate-200/50">
-          <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-            <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
-            Recent Alerts
-          </h2>
-          <div className="space-y-4">
-            {alerts.slice(0, 3).map((alert) => (
-              <div key={alert.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-slate-50 to-white border border-slate-100 hover:shadow-md transition-all duration-300">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-rose-200">
-                    {alert.blood_group}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-slate-900 font-medium">Needed Urgently</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {alert.address}
-                    </div>
-                  </div>
-                </div>
-                <Link to="/dashboard/alerts" className="px-4 py-2 bg-gradient-to-r from-rose-500 to-red-600 text-white hover:from-rose-600 hover:to-red-700 rounded-lg transition-colors text-sm font-medium shadow-lg shadow-rose-200">
-                  View Details
-                </Link>
+            <div className="space-y-3">
+              <div className="flex justify-between text-xs font-bold uppercase text-slate-500 tracking-wider">
+                <span>Location Status</span>
+                <span className="text-slate-900">{user?.latitude ? 'Active' : 'Missing'}</span>
               </div>
-            ))}
+              <div className="w-full bg-slate-100 h-3 overflow-hidden rounded-full">
+                <div className={cn("h-full w-full", user?.latitude ? "bg-emerald-500" : "bg-slate-300")} />
+              </div>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -528,82 +494,149 @@ const History = () => {
 // Alerts Section
 const Alerts = () => {
   const { alerts } = useSocket()
-  const [allAlerts, setAllAlerts] = useState([])
+  const [data, setData] = useState({ requests: [], campaigns: [] })
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
 
   useEffect(() => {
-    const fetchAlerts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/blood-requests/alerts')
-        setAllAlerts(response.data)
+        const [requestsRes, nearbyRes] = await Promise.all([
+          api.get('/blood-requests/alerts'),
+          api.get('/users/nearby')
+        ])
+        setData({
+          requests: requestsRes.data,
+          campaigns: nearbyRes.data.campaigns
+        })
       } catch (error) {
         console.log('Failed to fetch alerts')
       } finally {
         setLoading(false)
       }
     }
-    fetchAlerts()
+    fetchData()
   }, [alerts])
 
   const handleAccept = async (requestId) => {
     try {
       await api.put(`/blood-requests/${requestId}/accept`)
       setToast({ type: 'success', message: 'Request accepted! Thank you for helping.' })
-      setAllAlerts(prev => prev.filter(a => a.id !== requestId))
+      setData(prev => ({ ...prev, requests: prev.requests.filter(a => a.id !== requestId) }))
     } catch (error) {
       setToast({ type: 'error', message: error.response?.data?.error || 'Failed to accept' })
     }
   }
 
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div></div>
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">Blood Request Alerts</h1>
-        <p className="text-slate-500">Active blood requests within 35km of your location</p>
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">Alerts & Campaigns</h1>
+        <p className="text-slate-500">Stay updated with emergency requests and donation drives nearby</p>
       </div>
 
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-      {allAlerts.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-sm">
-          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bell className="w-8 h-8 text-slate-400" />
+      <div className="grid lg:grid-cols-2 gap-8">
+
+        {/* Emergency Requests Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="p-2 bg-red-100 rounded-lg text-red-600">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-800">Emergency Requests</h2>
           </div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-2">All Clear!</h3>
-          <p className="text-slate-500">No blood requests in your area right now.</p>
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {allAlerts.map((alert) => (
-            <div key={alert.id} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-all duration-300">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-orange-50 text-orange-500">
-                    <AlertTriangle className="w-6 h-6" />
+
+          {data.requests.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm h-64 flex flex-col items-center justify-center">
+              <CheckCircle2 className="w-12 h-12 text-slate-300 mb-3" />
+              <p className="text-slate-500 font-medium">No emergency requests nearby</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {data.requests.map((alert) => (
+                <div key={alert.id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 font-bold border border-rose-100">
+                        {alert.blood_group}
+                      </div>
+                      <div>
+                        <span className="block font-bold text-slate-800 text-sm">Blood Request</span>
+                        <span className="text-xs text-slate-500 block">{new Date(alert.created_at).toLocaleString()}</span>
+                      </div>
+                    </div>
+                    <span className="px-2 py-1 rounded-md bg-red-50 text-red-700 text-xs font-bold border border-red-100">
+                      {alert.units_needed} Unit(s)
+                    </span>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg font-bold text-slate-800">{alert.blood_group} Needed</span>
-                      <span className="px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-semibold">
-                        {alert.units_needed} unit(s)
-                      </span>
+                  <div className="flex items-center gap-2 text-sm text-slate-600 mb-4 bg-slate-50 p-3 rounded-lg">
+                    <MapPin className="w-4 h-4 flex-shrink-0 text-slate-400" />
+                    <span className="truncate">{alert.address}</span>
+                  </div>
+                  <button onClick={() => handleAccept(alert.id)} className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm shadow-red-200">
+                    Accept & Donate
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Campaigns Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
+              <Calendar className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-800">Upcoming Campaigns</h2>
+          </div>
+
+          {data.campaigns.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm h-64 flex flex-col items-center justify-center">
+              <Calendar className="w-12 h-12 text-slate-300 mb-3" />
+              <p className="text-slate-500 font-medium">No active campaigns nearby</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {data.campaigns.map((campaign) => (
+                <div key={campaign.id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-bold text-slate-800">{campaign.title}</h3>
+                    <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100">
+                      Campaign
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mb-3 line-clamp-2">{campaign.description}</p>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center gap-2 text-xs text-slate-600">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="truncate">{campaign.location}</span>
                     </div>
-                    <p className="text-slate-600 text-sm mb-1">{alert.address}</p>
-                    <div className="flex items-center gap-4 text-xs text-slate-400">
-                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(alert.created_at).toLocaleString()}</span>
-                      {alert.distance && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {(alert.distance / 1000).toFixed(1)} km away</span>}
+                    <div className="flex items-center gap-2 text-xs text-slate-600">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{new Date(campaign.date).toLocaleDateString()} • {campaign.time}</span>
                     </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <div className="text-xs font-semibold text-slate-500">
+                      Organizer: <span className="text-slate-700">{campaign.ngo_name || 'NGO'}</span>
+                    </div>
+                    {/* Placeholder for View Details or Register if functionality exists */}
+                    <button className="text-xs font-bold text-blue-600 hover:text-blue-700">View Details</button>
                   </div>
                 </div>
-                <button onClick={() => handleAccept(alert.id)} className="w-full md:w-auto px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium shadow-md shadow-red-200 transition-all">
-                  Accept & Help
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
-      )}
+
+      </div>
     </div>
   )
 }

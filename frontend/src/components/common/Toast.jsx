@@ -50,7 +50,7 @@ const Toast = ({ message, type = 'info', onClose, duration = 5000 }) => {
   }
 
   return (
-    <div 
+    <div
       className={`fixed top-20 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg transition-all duration-300 ${typeStyles[type]} ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}
     >
       <span className={iconColors[type]}>{icons[type]}</span>

@@ -53,7 +53,7 @@ const resetDatabase = async () => {
     console.log('  ✓ Admin user created with coordinates');
     console.log('  ✓ NGOs and Blood Banks are auto-verified when created via admin token');
     console.log('\n🔐 Admin Credentials:');
-    console.log('  Email: admin@bloodlink.com');
+    console.log('  Email: admin@bharakt.com');
     console.log('  Password: Admin@123');
     console.log('  Location: Bangalore, Karnataka, India');
     console.log('  Coordinates: 12.969028894136608, 77.72276389548833');

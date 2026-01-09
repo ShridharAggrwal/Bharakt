@@ -22,7 +22,7 @@ app.use('/api/stats', require('./routes/stats'));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'BloodLink API is running' });
+  res.json({ status: 'ok', message: 'Bharakt API is running' });
 });
 
 // Error handling middleware

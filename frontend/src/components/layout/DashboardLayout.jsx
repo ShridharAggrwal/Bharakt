@@ -46,7 +46,7 @@ const DashboardLayout = ({ children, navItems = [] }) => {
                 <img
                     src="https://www.livemint.com/lm-img/img/2025/02/20/optimize/INDIA-POLITICS-DELHI-14_1740045325725_1740045348415.jpg"
                     alt="Background"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-[center_15%]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-50/85 via-white/80 to-slate-50/85" />
                 <div className="absolute inset-0 backdrop-blur-[1px]" />
@@ -58,7 +58,7 @@ const DashboardLayout = ({ children, navItems = [] }) => {
                     <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-rose-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-red-200">
                         <span className="text-lg">🩸</span>
                     </div>
-                    <span className="font-bold text-lg text-slate-900">BloodLink</span>
+                    <span className="font-bold text-lg text-slate-900">Bharakt</span>
                 </div>
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -72,7 +72,7 @@ const DashboardLayout = ({ children, navItems = [] }) => {
                 {/* Sidebar */}
                 <aside
                     className={cn(
-                        "fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-screen",
+                        "fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:fixed lg:h-screen",
                         "bg-gradient-to-b from-white/90 via-red-50/40 to-rose-50/50 backdrop-blur-xl border-r border-rose-100/50 shadow-xl shadow-red-100/20",
                         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                     )}
@@ -85,11 +85,11 @@ const DashboardLayout = ({ children, navItems = [] }) => {
 
                         {/* Logo - Desktop */}
                         <div className="hidden lg:flex items-center gap-3 mb-10 px-2 relative z-10">
-                            <div className="w-11 h-11 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-500/30">
-                                <span className="text-2xl">🩸</span>
+                            <div className="w-11 h-11 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30 p-2.5">
+                                <img src="/blood-drop.svg" alt="logo" className="w-full h-full object-contain brightness-0 invert" />
                             </div>
                             <div>
-                                <span className="text-xl font-bold font-serif tracking-tight text-slate-900">BloodLink</span>
+                                <span className="text-xl font-bold font-serif tracking-tight text-slate-900">Bharakt</span>
                                 <p className="text-[10px] text-slate-400 uppercase tracking-widest">Admin Portal</p>
                             </div>
                         </div>
@@ -180,7 +180,7 @@ const DashboardLayout = ({ children, navItems = [] }) => {
                 )}
 
                 {/* Main Content */}
-                <main className="flex-1 w-full min-w-0 overflow-hidden">
+                <main className="flex-1 w-full min-w-0 overflow-hidden lg:pl-72">
                     <div className="h-full overflow-y-auto p-4 lg:p-8 custom-scrollbar">
                         <div className="max-w-7xl mx-auto space-y-8">
                             {children}

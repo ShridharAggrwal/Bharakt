@@ -2,13 +2,13 @@ const nodemailer = require('nodemailer');
 
 // Create reusable transporter
 const transporter = nodemailer.createTransporter({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: process.env.EMAIL_PORT || 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-    }
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: process.env.EMAIL_PORT || 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
+  }
 });
 
 /**
@@ -18,13 +18,13 @@ const transporter = nodemailer.createTransporter({
  * @param {string} name - User's name
  */
 const sendPasswordResetEmail = async (email, resetToken, name) => {
-    const resetURL = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+  const resetURL = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
 
-    const mailOptions = {
-        from: `"BloodLink" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: 'Password Reset Request - BloodLink',
-        html: `
+  const mailOptions = {
+    from: `"Bharakt" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Password Reset Request - Bharakt',
+    html: `
       <!DOCTYPE html>
       <html>
       <head>
@@ -41,12 +41,12 @@ const sendPasswordResetEmail = async (email, resetToken, name) => {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🩸 BloodLink</h1>
+            <h1>🩸 Bharakt</h1>
             <p>Password Reset Request</p>
           </div>
           <div class="content">
             <p>Hello ${name},</p>
-            <p>We received a request to reset your password for your BloodLink account. Click the button below to create a new password:</p>
+            <p>We received a request to reset your password for your Bharakt account. Click the button below to create a new password:</p>
             <center>
               <a href="${resetURL}" class="button">Reset Password</a>
             </center>
@@ -61,27 +61,27 @@ const sendPasswordResetEmail = async (email, resetToken, name) => {
               </ul>
             </div>
             <p>If you have any questions, feel free to contact our support team.</p>
-            <p>Best regards,<br>The BloodLink Team</p>
+            <p>Best regards,<br>The Bharakt Team</p>
           </div>
           <div class="footer">
-            <p>© 2026 BloodLink. Saving lives, one donation at a time.</p>
+            <p>© 2026 Bharakt. Saving lives, one donation at a time.</p>
           </div>
         </div>
       </body>
       </html>
     `
-    };
+  };
 
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Password reset email sent:', info.messageId);
-        return { success: true, messageId: info.messageId };
-    } catch (error) {
-        console.error('Error sending password reset email:', error);
-        throw new Error('Failed to send password reset email');
-    }
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Password reset email sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    throw new Error('Failed to send password reset email');
+  }
 };
 
 module.exports = {
-    sendPasswordResetEmail
+  sendPasswordResetEmail
 };
