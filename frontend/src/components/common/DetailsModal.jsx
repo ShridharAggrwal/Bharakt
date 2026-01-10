@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X, MapPin, Phone, Mail, Clock, Heart, Building2, Calendar, Users, Navigation, ExternalLink, Droplets } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -273,7 +274,8 @@ const DetailsModal = ({ isOpen, onClose, type, data, onTrackOnMap, onAccept, loa
         </>
     )
 
-    return (
+    // Use portal to render outside of any parent with backdrop-blur/transform
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <>
@@ -286,32 +288,37 @@ const DetailsModal = ({ isOpen, onClose, type, data, onTrackOnMap, onAccept, loa
                         onClick={onClose}
                     />
 
-                    {/* Modal */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 100 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 100 }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                        className="fixed inset-x-4 bottom-4 md:inset-auto md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-md bg-white rounded-3xl shadow-2xl z-50 max-h-[85vh] overflow-y-auto"
+                    {/* Modal Container - uses flex for centering instead of transform */}
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
                     >
-                        {/* Close Button */}
-                        <button
-                            onClick={onClose}
-                            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors z-10"
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            className="w-full max-w-md bg-white rounded-3xl shadow-2xl max-h-[85vh] overflow-y-auto pointer-events-auto"
                         >
-                            <X className="w-4 h-4" />
-                        </button>
+                            {/* Close Button */}
+                            <button
+                                onClick={onClose}
+                                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors z-10"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
 
-                        {/* Content */}
-                        <div className="p-6">
-                            {type === 'request' && renderBloodRequestDetails()}
-                            {type === 'campaign' && renderCampaignDetails()}
-                            {type === 'bloodbank' && renderBloodBankDetails()}
-                        </div>
-                    </motion.div>
+                            {/* Content */}
+                            <div className="p-6">
+                                {type === 'request' && renderBloodRequestDetails()}
+                                {type === 'campaign' && renderCampaignDetails()}
+                                {type === 'bloodbank' && renderBloodBankDetails()}
+                            </div>
+                        </motion.div>
+                    </div>
                 </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     )
 }
 
