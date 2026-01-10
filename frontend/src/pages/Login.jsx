@@ -68,7 +68,7 @@ const Login = () => {
         <img
           src="https://www.livemint.com/lm-img/img/2025/02/20/optimize/INDIA-POLITICS-DELHI-14_1740045325725_1740045348415.jpg"
           alt="Background"
-          className="w-full h-full object-cover object-[center_15%]"
+          className="w-full h-full object-cover object-[25%_20%]"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50/85 via-white/80 to-slate-50/85" />
         <div className="absolute inset-0 backdrop-blur-[1px]" />
