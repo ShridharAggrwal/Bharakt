@@ -584,20 +584,30 @@ function ImpactSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex gap-6 items-start"
                 >
-                  <div className="flex-1 bg-white rounded-2xl p-5 card-shadow border border-slate-100">
-                    <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
-                      <item.icon className="w-5 h-5 text-red-600" />
+                  <div className="bg-white rounded-2xl p-5 sm:p-6 card-shadow border border-slate-100">
+                    <div className="flex gap-4">
+                      {/* Left side: Icon, Title, Description */}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 sm:w-11 sm:h-11 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <item.icon className="w-5 h-5 text-red-600" />
+                          </div>
+                          <h3 className="font-semibold text-slate-900 text-sm sm:text-base leading-tight">{item.title}</h3>
+                        </div>
+                        <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">{item.description}</p>
+                      </div>
+
+                      {/* Right side: Button + Image (same width, stacked) */}
+                      <div className="flex flex-col gap-2 flex-shrink-0 w-[88px] sm:w-24">
+                        <Button size="sm" onClick={handleDonateClick} className="bg-red-600 hover:bg-red-700 text-white rounded-full text-[10px] sm:text-xs h-7 sm:h-8 w-full">
+                          Donate Now
+                        </Button>
+                        <div className="w-full h-[80px] sm:h-24 rounded-xl overflow-hidden">
+                          <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="font-semibold text-slate-900 mb-2">{item.title}</h3>
-                    <p className="text-xs text-slate-500 leading-relaxed mb-4">{item.description}</p>
-                    <Button size="sm" onClick={handleDonateClick} className="bg-red-600 hover:bg-red-700 text-white rounded-full text-xs px-4 h-8">
-                      Donate Now
-                    </Button>
-                  </div>
-                  <div className="hidden sm:block w-32 h-32 rounded-2xl overflow-hidden flex-shrink-0">
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                   </div>
                 </motion.div>
               ))}
@@ -611,9 +621,9 @@ function ImpactSection() {
             transition={{ delay: 0.3 }}
             className="space-y-6"
           >
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="bg-white rounded-2xl overflow-hidden card-shadow">
-                <div className="aspect-square">
+                <div className="aspect-square sm:aspect-square">
                   <img
                     src="/images/healthcare-support.jpg"
                     alt="Healthcare support"
@@ -621,37 +631,37 @@ function ImpactSection() {
                   />
                 </div>
               </div>
-              <div className="space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
                 <div className="bg-white rounded-2xl p-4 card-shadow border border-slate-100">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-2xl font-bold text-slate-900">8,500+</span>
-                    <span className="text-xs text-slate-500">Medical Aid Given</span>
+                  <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                    <span className="text-xl sm:text-2xl font-bold text-slate-900">8,500+</span>
+                    <span className="text-[10px] sm:text-xs text-slate-500">Medical Aid Given</span>
                   </div>
                 </div>
                 <div className="bg-white rounded-2xl p-4 card-shadow border border-slate-100">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-2xl font-bold text-slate-900">12,000+</span>
-                    <span className="text-xs text-slate-500">Children Supported</span>
+                  <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                    <span className="text-xl sm:text-2xl font-bold text-slate-900">12,000+</span>
+                    <span className="text-[10px] sm:text-xs text-slate-500">Children Supported</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white rounded-2xl p-5 card-shadow border border-slate-100">
-                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="bg-white rounded-2xl p-4 sm:p-5 card-shadow border border-slate-100">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                   <ShieldCheck className="w-5 h-5 text-red-600" />
                 </div>
-                <h4 className="font-semibold text-slate-900 mb-2">Vision Statement</h4>
+                <h4 className="font-semibold text-slate-900 mb-2 text-sm sm:text-base">Vision Statement</h4>
                 <p className="text-xs text-slate-500 leading-relaxed">
                   We strive to create a future where every child has the opportunity to learn, every family has access to basic needs, and every community can grow with hope, security.
                 </p>
               </div>
-              <div className="bg-white rounded-2xl p-5 card-shadow border border-slate-100">
-                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+              <div className="bg-white rounded-2xl p-4 sm:p-5 card-shadow border border-slate-100">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                   <Building2 className="w-5 h-5 text-red-600" />
                 </div>
-                <h4 className="font-semibold text-slate-900 mb-2">Mission Statement</h4>
+                <h4 className="font-semibold text-slate-900 mb-2 text-sm sm:text-base">Mission Statement</h4>
                 <p className="text-xs text-slate-500 leading-relaxed">
                   We are dedicated to supporting vulnerable communities by providing food, education, healthcare, and essential resources with compassion and dignity.
                 </p>
@@ -697,35 +707,49 @@ function BloodTypesSection() {
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {bloodTypes.map((blood, index) => (
-            <motion.div
-              key={blood.type}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
-              className="group"
-            >
-              <div className="bg-white rounded-2xl p-5 h-full border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 hover:border-red-100">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-all duration-300 shadow-md">
-                    <span className="text-xl font-bold text-white">{blood.type}</span>
+          {bloodTypes.map((blood, index) => {
+            const colors = [
+              { bg: "bg-red-50", border: "border-red-200", text: "text-white", iconBg: "bg-red-500" },
+              { bg: "bg-orange-50", border: "border-orange-200", text: "text-white", iconBg: "bg-orange-500" },
+              { bg: "bg-amber-50", border: "border-amber-200", text: "text-white", iconBg: "bg-amber-500" },
+              { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-white", iconBg: "bg-emerald-500" },
+              { bg: "bg-teal-50", border: "border-teal-200", text: "text-white", iconBg: "bg-teal-500" },
+              { bg: "bg-cyan-50", border: "border-cyan-200", text: "text-white", iconBg: "bg-cyan-500" },
+              { bg: "bg-blue-50", border: "border-blue-200", text: "text-white", iconBg: "bg-blue-500" },
+              { bg: "bg-violet-50", border: "border-violet-200", text: "text-white", iconBg: "bg-violet-500" },
+            ];
+            const color = colors[index % colors.length];
+
+            return (
+              <motion.div
+                key={blood.type}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+                className="group"
+              >
+                <div className={`${color.bg} rounded-2xl p-5 h-full border ${color.border} hover:shadow-lg hover:-translate-y-1 transition-all duration-300`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-14 h-14 ${color.iconBg} rounded-2xl flex items-center justify-center group-hover:scale-105 transition-all duration-300 shadow-sm`}>
+                      <span className={`text-xl font-bold ${color.text}`}>{blood.type}</span>
+                    </div>
+                    <span className="text-xs font-medium text-slate-500">{blood.percentage}</span>
                   </div>
-                  <span className="text-xs font-medium text-slate-500">{blood.percentage}</span>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wide">Donates to</span>
+                      <p className="text-xs font-medium text-slate-700">{blood.canDonateTo}</p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wide">Receives from</span>
+                      <p className="text-xs font-medium text-slate-700">{blood.canReceiveFrom}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wide">Donates to</span>
-                    <p className="text-xs font-medium text-slate-700">{blood.canDonateTo}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wide">Receives from</span>
-                    <p className="text-xs font-medium text-slate-700">{blood.canReceiveFrom}</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -867,7 +891,7 @@ function CTASection() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
 
           <div className="absolute inset-0 flex items-center">
-            <div className="max-w-lg ml-12 lg:ml-20">
+            <div className="max-w-xl ml-6 mr-6 sm:ml-12 lg:ml-20 w-full">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -883,7 +907,7 @@ function CTASection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-3xl lg:text-4xl font-serif text-white mb-6"
+                className="text-2xl sm:text-3xl lg:text-4xl font-serif text-white mb-6"
               >
                 Get Updates That<br />Make a Difference
               </motion.h2>
@@ -893,14 +917,14 @@ function CTASection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="flex gap-3"
+                className="flex flex-col sm:flex-row gap-3 w-full"
               >
                 <input
                   type="email"
-                  placeholder="Enter Your Email Address"
-                  className="flex-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-white/40"
+                  placeholder="Enter Your Email"
+                  className="flex-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-3 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-white/40 w-full"
                 />
-                <Button className="bg-white text-slate-900 hover:bg-white/90 rounded-full px-6 h-12 text-sm font-medium">
+                <Button className="bg-white text-slate-900 hover:bg-white/90 rounded-full px-8 h-12 text-sm font-medium whitespace-nowrap w-full sm:w-auto">
                   Subscribe
                 </Button>
               </motion.div>
@@ -1006,14 +1030,14 @@ function Footer() {
               making life-saving blood accessible to everyone, everywhere.
             </p>
             <div className="flex gap-3">
-              {["twitter", "facebook", "instagram", "linkedin"].map((social) => (
+              {["x", "facebook", "instagram", "whatsapp"].map((social) => (
                 <a
                   key={social}
                   href="#"
                   className="w-9 h-9 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center transition-colors"
                 >
                   <span className="sr-only">{social}</span>
-                  <div className="w-4 h-4 bg-slate-400" style={{
+                  <div className={`w-4 h-4 ${social === 'x' ? 'bg-white' : 'bg-slate-400'}`} style={{
                     maskImage: `url(https://cdn.simpleicons.org/${social})`,
                     WebkitMaskImage: `url(https://cdn.simpleicons.org/${social})`,
                     maskSize: 'contain',

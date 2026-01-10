@@ -509,7 +509,7 @@ const CreateCampaign = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-2">Create Campaign</h1>
         <p className="text-slate-500">Organize a new blood donation drive</p>
@@ -525,26 +525,31 @@ const CreateCampaign = () => {
           </div>
 
           {/* Blood Bank Collaboration Section */}
-          <div className="bg-purple-50 border border-purple-100 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="font-semibold text-purple-800 flex items-center gap-2">
-                  <Building2 className="w-4 h-4" />
-                  Collaborate with Blood Banks
-                </h3>
-                <p className="text-xs text-purple-600 mt-0.5">Partner with nearby blood banks for your campaign</p>
+          <div className="bg-purple-50 border border-purple-100 rounded-xl p-6 transition-all hover:shadow-md hover:border-purple-200 group">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                <Building2 className="w-5 h-5 text-purple-600" />
               </div>
+              <h3 className="font-bold text-slate-800 text-lg">
+                Collaborate with Blood Banks
+              </h3>
+            </div>
+
+            <p className="text-sm text-slate-600 leading-relaxed mb-4">
+              Partner with nearby blood banks to expand your reach, screen donors effectively, and ensure the success of your donation drive.
+            </p>
+
+            <div className="flex justify-end">
               <button
                 type="button"
                 onClick={handleOpenBankModal}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-all shadow-sm"
+                className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold transition-all shadow-md shadow-purple-200"
               >
-                {selectedBanks.length > 0 ? `${selectedBanks.length} Selected` : 'Find Banks'}
+                {selectedBanks.length > 0 ? `${selectedBanks.length} Banks Selected` : 'Find Banks'}
               </button>
             </div>
-
             {selectedBanks.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-purple-200/60">
                 {selectedBanks.map(bank => (
                   <span key={bank.id} className="px-3 py-1.5 bg-white border border-purple-200 rounded-full text-sm text-purple-700 font-medium flex items-center gap-2">
                     {bank.name}
@@ -608,142 +613,144 @@ const CreateCampaign = () => {
             {loading ? 'Creating Campaign...' : 'Create Campaign'}
           </button>
         </form>
-      </div>
+      </div >
 
       {/* Blood Bank Selection Modal */}
-      {showBankModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => { setShowBankModal(false); setViewingBank(null) }} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-hidden">
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-white border-b border-slate-100 p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {viewingBank && (
-                  <button onClick={() => setViewingBank(null)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                )}
-                <h3 className="text-lg font-bold text-slate-800">
-                  {viewingBank ? viewingBank.name : 'Nearby Blood Banks'}
-                </h3>
-              </div>
-              <button onClick={() => { setShowBankModal(false); setViewingBank(null) }} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-4 overflow-y-auto max-h-[60vh]">
-              {loadingBanks ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500" />
-                </div>
-              ) : viewingBank ? (
-                // Bank Details View
-                <div className="space-y-4">
-                  <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-3 bg-purple-100 rounded-xl">
-                        <Building2 className="w-6 h-6 text-purple-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-800">{viewingBank.name}</h4>
-                        {viewingBank.distance && (
-                          <p className="text-sm text-purple-600">{formatDistance(viewingBank.distance)}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-sm text-slate-600">
-                      <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-slate-400" /> {viewingBank.address || 'Address not available'}</p>
-                      {viewingBank.contact_info && <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-slate-400" /> {viewingBank.contact_info}</p>}
-                      {viewingBank.email && <p className="flex items-center gap-2"><Mail className="w-4 h-4 text-slate-400" /> {viewingBank.email}</p>}
-                    </div>
-                  </div>
-
-                  {/* Blood Stock Levels */}
-                  {viewingBank.stock && (
-                    <div>
-                      <h5 className="font-semibold text-slate-700 mb-3">Available Blood Units</h5>
-                      <div className="grid grid-cols-4 gap-2">
-                        {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(type => {
-                          const units = viewingBank.stock[type] || 0
-                          return (
-                            <div key={type} className="bg-slate-50 rounded-lg p-3 text-center border border-slate-100">
-                              <span className="text-xs font-bold text-slate-500">{type}</span>
-                              <p className={`text-lg font-bold ${units > 0 ? 'text-green-600' : 'text-slate-300'}`}>{units}</p>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
+      {
+        showBankModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => { setShowBankModal(false); setViewingBank(null) }} />
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-hidden">
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-white border-b border-slate-100 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {viewingBank && (
+                    <button onClick={() => setViewingBank(null)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
                   )}
-
-                  <button
-                    onClick={() => { handleSelectBank(viewingBank); setViewingBank(null) }}
-                    className={`w-full py-3 rounded-xl font-bold transition-all ${selectedBanks.find(b => b.id === viewingBank.id)
-                      ? 'bg-red-100 text-red-600 border border-red-200'
-                      : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-200'
-                      }`}
-                  >
-                    {selectedBanks.find(b => b.id === viewingBank.id) ? 'Remove from Selection' : 'Select as Partner'}
-                  </button>
+                  <h3 className="text-lg font-bold text-slate-800">
+                    {viewingBank ? viewingBank.name : 'Nearby Blood Banks'}
+                  </h3>
                 </div>
-              ) : (
-                // Bank List View
-                <div className="space-y-3">
-                  {nearbyBanks.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                      <p className="text-slate-500">No blood banks found nearby</p>
-                    </div>
-                  ) : (
-                    nearbyBanks.map(bank => (
-                      <div
-                        key={bank.id}
-                        onClick={() => setViewingBank(bank)}
-                        className={`p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md ${selectedBanks.find(b => b.id === bank.id)
-                          ? 'bg-purple-50 border-purple-200'
-                          : 'bg-white border-slate-200 hover:border-purple-200'
-                          }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${selectedBanks.find(b => b.id === bank.id) ? 'bg-purple-100' : 'bg-slate-100'}`}>
-                              <Building2 className={`w-5 h-5 ${selectedBanks.find(b => b.id === bank.id) ? 'text-purple-600' : 'text-slate-500'}`} />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-slate-800">{bank.name}</h4>
-                              {bank.distance && (
-                                <p className="text-xs text-slate-500">{formatDistance(bank.distance)}</p>
-                              )}
-                            </div>
-                          </div>
-                          {selectedBanks.find(b => b.id === bank.id) && (
-                            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">Selected</span>
+                <button onClick={() => { setShowBankModal(false); setViewingBank(null) }} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-4 overflow-y-auto max-h-[60vh]">
+                {loadingBanks ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500" />
+                  </div>
+                ) : viewingBank ? (
+                  // Bank Details View
+                  <div className="space-y-4">
+                    <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-3 bg-purple-100 rounded-xl">
+                          <Building2 className="w-6 h-6 text-purple-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-800">{viewingBank.name}</h4>
+                          {viewingBank.distance && (
+                            <p className="text-sm text-purple-600">{formatDistance(viewingBank.distance)}</p>
                           )}
                         </div>
                       </div>
-                    ))
-                  )}
+                      <div className="space-y-2 text-sm text-slate-600">
+                        <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-slate-400" /> {viewingBank.address || 'Address not available'}</p>
+                        {viewingBank.contact_info && <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-slate-400" /> {viewingBank.contact_info}</p>}
+                        {viewingBank.email && <p className="flex items-center gap-2"><Mail className="w-4 h-4 text-slate-400" /> {viewingBank.email}</p>}
+                      </div>
+                    </div>
+
+                    {/* Blood Stock Levels */}
+                    {viewingBank.stock && (
+                      <div>
+                        <h5 className="font-semibold text-slate-700 mb-3">Available Blood Units</h5>
+                        <div className="grid grid-cols-4 gap-2">
+                          {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(type => {
+                            const units = viewingBank.stock[type] || 0
+                            return (
+                              <div key={type} className="bg-slate-50 rounded-lg p-3 text-center border border-slate-100">
+                                <span className="text-xs font-bold text-slate-500">{type}</span>
+                                <p className={`text-lg font-bold ${units > 0 ? 'text-green-600' : 'text-slate-300'}`}>{units}</p>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => { handleSelectBank(viewingBank); setViewingBank(null) }}
+                      className={`w-full py-3 rounded-xl font-bold transition-all ${selectedBanks.find(b => b.id === viewingBank.id)
+                        ? 'bg-red-100 text-red-600 border border-red-200'
+                        : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-200'
+                        }`}
+                    >
+                      {selectedBanks.find(b => b.id === viewingBank.id) ? 'Remove from Selection' : 'Select as Partner'}
+                    </button>
+                  </div>
+                ) : (
+                  // Bank List View
+                  <div className="space-y-3">
+                    {nearbyBanks.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                        <p className="text-slate-500">No blood banks found nearby</p>
+                      </div>
+                    ) : (
+                      nearbyBanks.map(bank => (
+                        <div
+                          key={bank.id}
+                          onClick={() => setViewingBank(bank)}
+                          className={`p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md ${selectedBanks.find(b => b.id === bank.id)
+                            ? 'bg-purple-50 border-purple-200'
+                            : 'bg-white border-slate-200 hover:border-purple-200'
+                            }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2 rounded-lg ${selectedBanks.find(b => b.id === bank.id) ? 'bg-purple-100' : 'bg-slate-100'}`}>
+                                <Building2 className={`w-5 h-5 ${selectedBanks.find(b => b.id === bank.id) ? 'text-purple-600' : 'text-slate-500'}`} />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-slate-800">{bank.name}</h4>
+                                {bank.distance && (
+                                  <p className="text-xs text-slate-500">{formatDistance(bank.distance)}</p>
+                                )}
+                              </div>
+                            </div>
+                            {selectedBanks.find(b => b.id === bank.id) && (
+                              <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">Selected</span>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              {!viewingBank && selectedBanks.length > 0 && (
+                <div className="sticky bottom-0 bg-white border-t border-slate-100 p-4">
+                  <button
+                    onClick={() => setShowBankModal(false)}
+                    className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-lg shadow-purple-200 transition-all"
+                  >
+                    Done ({selectedBanks.length} selected)
+                  </button>
                 </div>
               )}
             </div>
-
-            {/* Modal Footer */}
-            {!viewingBank && selectedBanks.length > 0 && (
-              <div className="sticky bottom-0 bg-white border-t border-slate-100 p-4">
-                <button
-                  onClick={() => setShowBankModal(false)}
-                  className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold shadow-lg shadow-purple-200 transition-all"
-                >
-                  Done ({selectedBanks.length} selected)
-                </button>
-              </div>
-            )}
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   )
 }
 

@@ -54,7 +54,7 @@ const Overview = () => {
   ]
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto h-[calc(100vh-6rem)] flex flex-col">
+    <div className="space-y-6 max-w-7xl mx-auto min-h-[calc(100vh-6rem)] lg:h-[calc(100vh-6rem)] flex flex-col">
       <div className="text-center shrink-0">
         <h1 className="text-3xl font-bold font-serif text-slate-900 mb-2">Blood Bank Dashboard</h1>
         <p className="text-slate-500">Manage your blood inventory and requests</p>
@@ -80,9 +80,9 @@ const Overview = () => {
       </div>
 
       {/* Bottom Section: Stock Overview & Quick Actions */}
-      <div className="grid lg:grid-cols-3 gap-6 grow min-h-0">
+      <div className="grid lg:grid-cols-3 gap-6 lg:grow lg:min-h-0">
         {/* Live Inventory (Col-span-2) */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col lg:overflow-hidden">
           <div className="flex items-center justify-between mb-6 shrink-0">
             <h2 className="text-lg font-bold text-slate-900">Live Inventory</h2>
             <div className="flex gap-3 text-xs font-medium">
@@ -92,9 +92,10 @@ const Overview = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-4 overflow-y-auto pr-2 custom-scrollbar grow content-start">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:overflow-y-auto pr-2 custom-scrollbar lg:grow content-start">
             {stock.map((item) => {
               const style = getStockColor(item.units_available)
+
               return (
                 <motion.div
                   whileHover={{ scale: 1.02 }}
